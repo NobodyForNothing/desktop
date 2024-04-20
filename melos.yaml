@@ -1,0 +1,5 @@
+name: derdilla_desktop
+
+packages:
+  - apps/**
+  - packages/**

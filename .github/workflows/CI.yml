@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          channel: beta
+      - uses: bluefireteam/melos-action@v3
+      - name: "🛠️ Validate format"
+        run: melos run format-check
+
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          channel: beta
+      - uses: bluefireteam/melos-action@v3
+      - name: "🔍 Analyze code"
+        uses: invertase/github-action-dart-analyzer@v2.0.0
+        with:
+          fatal-infos: true
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          channel: beta
+      - uses: bluefireteam/melos-action@v3
+      - name: "🧪 Run test"
+        run: melos test
