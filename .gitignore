@@ -2,3 +2,4 @@
 .dart_tool/
 pubspec_overrides.yaml
 pubspec.lock
+/melos_derdilla_desktop.iml
