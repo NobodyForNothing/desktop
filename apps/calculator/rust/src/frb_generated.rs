@@ -31,7 +31,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.0.0-dev.32";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1469677190;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 472052147;
 
 // Section: executor
 
@@ -63,9 +63,7 @@ fn wire_init_app_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
             move |context| {
-                transform_result_sse(
-                    (move || Result::<_, ()>::Ok(crate::api::simple::init_app()))(),
-                )
+                transform_result_sse((move || Result::<_, ()>::Ok(crate::api::calc::init_app()))())
             }
         },
     )
@@ -96,7 +94,7 @@ fn wire_interpret_impl(
             deserializer.end();
             move |context| {
                 transform_result_sse((move || {
-                    Result::<_, ()>::Ok(crate::api::simple::interpret(api_equation))
+                    Result::<_, ()>::Ok(crate::api::calc::interpret(api_equation))
                 })())
             }
         },

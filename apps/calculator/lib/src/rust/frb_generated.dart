@@ -3,7 +3,7 @@
 
 // ignore_for_file: unused_import, unused_element, unnecessary_import, duplicate_ignore, invalid_use_of_internal_member, annotate_overrides, non_constant_identifier_names, curly_braces_in_flow_control_structures, prefer_const_literals_to_create_immutables, unused_field
 
-import 'api/simple.dart';
+import 'api/calc.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.io.dart' if (dart.library.html) 'frb_generated.web.dart';
@@ -56,7 +56,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.0.0-dev.32';
 
   @override
-  int get rustContentHash => -1469677190;
+  int get rustContentHash => 472052147;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(

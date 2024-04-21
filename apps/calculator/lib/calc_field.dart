@@ -1,4 +1,4 @@
-import 'package:calculator/src/rust/api/simple.dart';
+import 'package:calculator/src/rust/api/calc.dart';
 import 'package:flutter/material.dart';
 
 /// Field that allows inputting new calculations and shows a immutable history.
