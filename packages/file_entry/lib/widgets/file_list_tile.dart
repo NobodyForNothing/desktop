@@ -21,6 +21,8 @@ class FileListTile extends StatelessWidget {
   final List<PopupMenuEntry> options;
 
   // TODO: file selection (external mixin ?)
+  // TODO: folder support
+  // TODO: display app size and other info if width supports it
 
   @override
   Widget build(BuildContext context) {
