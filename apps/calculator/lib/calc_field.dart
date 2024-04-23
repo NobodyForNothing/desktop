@@ -40,7 +40,7 @@ class _CalcFieldState extends State<CalcField> {
 
   @override
   Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.max,
+    mainAxisSize: MainAxisSize.min,
     children: [
       const Expanded(child: SizedBox.shrink()),
       for (final e in _history)
