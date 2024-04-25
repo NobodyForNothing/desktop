@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:calculator/src/rust/api/calc.dart';
+import 'package:flutter/widgets.dart';
 
 class EquationManager {
   final List<(String, String?)> _lastHistory = [];
 
   final _error = StreamController<String?>();
   final _history = StreamController<List<(String, String?)>>();
+
+  /// Key for animated history.
+  final keys = GlobalKey<AnimatedListState>();
   
   /// Previously submitted equations and their results.
   Stream<List<(String, String?)>> get history => _history.stream;
@@ -21,6 +25,10 @@ class EquationManager {
     if (val != null) {
       _lastHistory.add((text, val));
       _history.sink.add(_lastHistory);
+      keys.currentState?.insertItem(
+          _lastHistory.length - 1,
+          duration: const Duration(milliseconds: 500)
+      );
     } else {
       _error.sink.add('Unable to calculate result');
     }

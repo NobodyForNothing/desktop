@@ -46,18 +46,29 @@ class _CalcFieldState extends State<CalcField> {
       const Expanded(child: SizedBox.shrink()),
       StreamBuilder(
         stream: widget.equationManager.history,
-        builder: (context, snapshot) => ListView.builder(
+        builder: (context, snapshot) => AnimatedList(
           shrinkWrap: true,
-          itemCount: snapshot.data?.length ?? 0,
-          itemBuilder: (context, idx) => ListTile(
-            title: Text(snapshot.data![idx].$1),
-            onTap: () {
-              _controller.text += ' ${snapshot.data![idx].$2
-                  ?? snapshot.data![idx].$1 } ';
-            },
-            trailing: snapshot.data![idx].$2 == null
-                ? null
-                : Text(snapshot.data![idx].$2!),
+          key: widget.equationManager.keys,
+          initialItemCount: snapshot.data?.length ?? 0,
+          itemBuilder: (context, idx, animation) => SlideTransition(
+            position: animation.drive(
+                Tween<Offset>(begin: Offset(0.9, 0), end: Offset(0, 0))
+                    .chain(CurveTween(curve: Curves.ease))),
+            child: FadeTransition(
+              opacity: animation
+                  .drive(Tween(begin: .0, end:  1.0)
+                  .chain(CurveTween(curve: Curves.ease))),
+              child: ListTile(
+                title: Text(snapshot.data![idx].$1),
+                onTap: () {
+                  _controller.text += ' ${snapshot.data![idx].$2
+                      ?? snapshot.data![idx].$1 } ';
+                },
+                trailing: snapshot.data![idx].$2 == null
+                    ? null
+                    : Text(snapshot.data![idx].$2!),
+              ),
+            ),
           ),
         )
       ),
