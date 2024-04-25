@@ -5,12 +5,18 @@ import 'package:flutter/material.dart';
 /// On screen numpad like field to enter values.
 class Numpad extends StatelessWidget {
   /// Create on screen numpad like field to enter values.
-  const Numpad({super.key, required this.onEntered});
+  const Numpad({super.key, 
+    required this.onEntered, 
+    required this.onSubmit,
+  });
   
   /// Gets called for every new character/symbol entered.
   /// 
   /// Multi-character symbols may contain an unclosed opening bracket (`sqrt(`).
   final Function(String entered) onEntered;
+  
+  /// Called when the solve button is pressed. 
+  final Function() onSubmit;
 
   Widget _sameCharacterButton(String character, BuildContext context) => Padding(
     padding: const EdgeInsets.all(3),
@@ -68,9 +74,10 @@ class Numpad extends StatelessWidget {
             _sameCharacterButton('1', context),
             _sameCharacterButton('2', context),
             _sameCharacterButton('3', context),
-            _sameCharacterButton('+', context),
+            FilledButton(onPressed: onSubmit, child: Text('=')),
           ],
-        )
+        ),
+        const SizedBox(height: 16,),
       ],
     ),
   );

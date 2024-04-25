@@ -1,16 +1,20 @@
+import 'package:calculator/equation_manager.dart';
 import 'package:calculator/src/rust/api/calc.dart';
 import 'package:flutter/material.dart';
 
 /// Field that allows inputting new calculations and shows a immutable history.
 class CalcField extends StatefulWidget {
   /// Create a text field for calculations.
-  const CalcField({
-    super.key,
+  const CalcField({super.key,
     this.controller,
+    required this.equationManager,
   });
 
   /// Controls the calculation input being edited.
   final TextEditingController? controller;
+
+  /// Controls state updates.
+  final EquationManager equationManager;
 
   @override
   State<CalcField> createState() => _CalcFieldState();
@@ -19,9 +23,6 @@ class CalcField extends StatefulWidget {
 class _CalcFieldState extends State<CalcField> {
   late final TextEditingController _controller;
   late final FocusNode _focus;
-
-  final List<(String, String?)> _history = [];
-  String? _error;
 
   @override
   void initState() {
@@ -43,55 +44,47 @@ class _CalcFieldState extends State<CalcField> {
     mainAxisSize: MainAxisSize.min,
     children: [
       const Expanded(child: SizedBox.shrink()),
-      for (final e in _history)
-        ListTile(
-          title: Text(e.$1),
-          onTap: () {
-            // TODO: add result to field
-            _controller.text += '$e ';
-          },
-          trailing: e.$2 == null ? null : Text(e.$2!),
-        ),
+      StreamBuilder(
+        stream: widget.equationManager.history,
+        builder: (context, snapshot) => ListView.builder(
+          shrinkWrap: true,
+          itemCount: snapshot.data?.length ?? 0,
+          itemBuilder: (context, idx) => ListTile(
+            title: Text(snapshot.data![idx].$1),
+            onTap: () {
+              _controller.text += ' ${snapshot.data![idx].$2
+                  ?? snapshot.data![idx].$1 } ';
+            },
+            trailing: snapshot.data![idx].$2 == null
+                ? null
+                : Text(snapshot.data![idx].$2!),
+          ),
+        )
+      ),
       Padding(
         padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          controller: _controller,
-          focusNode: _focus,
-          decoration: InputDecoration(
-            errorText: _error,
-            //labelText: 'Equation input'
-            suffixIcon: IconButton(
-              onPressed: () => setState(() {
-                _controller.clear();
-              }),
-              icon: const Icon(Icons.clear),
-            ),
-            border: const OutlineInputBorder(),
-            hintText: '2 + x = 4'),
-          onSubmitted: (text) async {
-            setState(() {
-              _error = null;
-              _history.add((text, null));
-            });
-            final val = await interpret(equation: text);
-            if (val != null) {
-              setState(() {
-                _history.removeLast();
-                _history.add((text, val));
-                _controller.clear();
-                _focus.requestFocus();
-              });
-            } else {
-              setState(() {
-                _history.removeLast();
-                _error = 'Unable to calculate result';
-                _focus.requestFocus();
-              });
-            }
-
-          },
+        child: StreamBuilder<String?>(
+          stream: widget.equationManager.errors,
+          builder: (context, snapshot) => TextField(
+            controller: _controller,
+            focusNode: _focus,
+            decoration: InputDecoration(
+              errorText: snapshot.data,
+              //labelText: 'Equation input'
+              suffixIcon: IconButton(
+                onPressed: () => setState(() {
+                  _controller.clear();
+                }),
+                icon: const Icon(Icons.clear),
+              ),
+              border: const OutlineInputBorder(),
+              hintText: '2 + x = 4'),
+            onSubmitted: widget.equationManager.submit,
+          )
         ),
       ),
     ],
   );
+
+ // TODO field clearing and focus
 }

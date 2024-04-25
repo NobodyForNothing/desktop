@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:calculator/calc_field.dart';
+import 'package:calculator/equation_manager.dart';
 import 'package:calculator/numpad.dart';
 import 'package:calculator/src/rust/frb_generated.dart';
 import 'package:flutter/material.dart';
@@ -18,19 +19,20 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final TextEditingController _controler;
-
+  late final TextEditingController _controller;
+  late final EquationManager _manager;
 
   @override
   void initState() {
     super.initState();
-    _controler = TextEditingController();
+    _controller = TextEditingController();
+    _manager = EquationManager();
   }
 
 
   @override
   void dispose() {
-    _controler.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -47,11 +49,13 @@ class _MyAppState extends State<MyApp> {
           children: [
             Expanded(
               child: CalcField(
-              controller: _controler,
+                controller: _controller,
+                equationManager: _manager,
               )
             ),
             Numpad(
-              onEntered: (v) => _controler.text += v,
+              onEntered: (v) => _controller.text += v,
+              onSubmit: () => _manager.submit(_controller.text),
             ),
           ],
         ),
