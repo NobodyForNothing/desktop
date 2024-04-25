@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 /// On screen numpad like field to enter values.
@@ -18,7 +16,7 @@ class Numpad extends StatelessWidget {
   /// Called when the solve button is pressed. 
   final Function() onSubmit;
 
-  Widget _sameCharacterButton(String character, BuildContext context) => Padding(
+  Widget _sameCharacterButton(String character, BuildContext context) =>Padding(
     padding: const EdgeInsets.all(3),
     child: TextButton(
       onPressed: () => onEntered(character),
@@ -74,7 +72,10 @@ class Numpad extends StatelessWidget {
             _sameCharacterButton('1', context),
             _sameCharacterButton('2', context),
             _sameCharacterButton('3', context),
-            FilledButton(onPressed: onSubmit, child: Text('=')),
+            FilledButton(
+              onPressed: onSubmit,
+              child: const Text('=')
+            ),
           ],
         ),
         const SizedBox(height: 16,),

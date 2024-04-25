@@ -1,17 +1,20 @@
-// The original content is temporarily commented out to allow generating a self-contained demo - feel free to uncomment later.
-
-import 'dart:math';
-
-import 'package:calculator/calc_field.dart';
 import 'package:calculator/equation_manager.dart';
-import 'package:calculator/numpad.dart';
 import 'package:calculator/src/rust/frb_generated.dart';
+import 'package:calculator/src/widgets/calc_field.dart';
+import 'package:calculator/src/widgets/history.dart';
+import 'package:calculator/src/widgets/numpad.dart';
 import 'package:flutter/material.dart';
+
 void main() async {
   await RustLib.init();
   runApp(const MyApp());
 }
+
+/// Primary app screen.
+///
+/// Composes overall layout and hosts state management.
 class MyApp extends StatefulWidget {
+  /// Create primary app screen.
   const MyApp({super.key});
 
   @override
@@ -19,20 +22,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late final TextEditingController _controller;
-  late final EquationManager _manager;
+  final EquationManager _manager = EquationManager();
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
-    _manager = EquationManager();
+    _manager.setUp();
   }
-
 
   @override
   void dispose() {
-    _controller.dispose();
+    _manager.dispose();
     super.dispose();
   }
 
@@ -47,15 +47,13 @@ class _MyAppState extends State<MyApp> {
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: CalcField(
-                controller: _controller,
-                equationManager: _manager,
-              )
+            History(equationManager: _manager),
+            CalcField(
+              equationManager: _manager,
             ),
             Numpad(
-              onEntered: (v) => _controller.text += v,
-              onSubmit: () => _manager.submit(_controller.text),
+              onEntered: (v) => _manager.inputController.text += v,
+              onSubmit: () => _manager.submit(_manager.inputController.text),
             ),
           ],
         ),
