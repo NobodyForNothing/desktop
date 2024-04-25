@@ -11,6 +11,8 @@ class History extends StatelessWidget {
   /// Controls state updates.
   final EquationManager equationManager;
 
+  // TODO: consider rendering as cards
+
   @override
   Widget build(BuildContext context) => Flexible(
     fit: FlexFit.tight,

@@ -57,7 +57,7 @@ class Numpad extends StatelessWidget {
           _sameCharacterButton('7'),
           _sameCharacterButton('8'),
           _sameCharacterButton('9'),
-          _sameCharacterButton('.'),
+          _sameCharacterButton('^'),
         ],
       ),
       Row(
@@ -68,7 +68,7 @@ class Numpad extends StatelessWidget {
           _sameCharacterButton('4'),
           _sameCharacterButton('5'),
           _sameCharacterButton('6'),
-          _sameCharacterButton('x'),
+          _sameCharacterButton('.'),
         ],
       ),
       Row(
@@ -128,17 +128,20 @@ class Numpad extends StatelessWidget {
   Widget build(BuildContext context) {
     final primaryKB = _buildPrimaryKeyboard(context);
     final secondaryKB = _buildSecondaryKeyboard(context);
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          primaryKB,
-          const VerticalDivider(),
-          secondaryKB,
-        ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            primaryKB,
+            const VerticalDivider(),
+            secondaryKB,
+          ],
+        ),
       ),
     );
     // TODO: swiping when not enough space

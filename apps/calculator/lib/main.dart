@@ -38,25 +38,43 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-      title: 'Calculator',
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: true,
+    debugShowCheckedModeBanner: false,
+    title: 'Calculator',
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        brightness: Brightness.dark,
+        seedColor: Colors.amber,
       ),
-      home: Scaffold(
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            History(equationManager: _manager),
-            CalcField(
-              equationManager: _manager,
-            ),
-            Numpad(
-              onEntered: (v) => _manager.inputController.text += v,
-              onSubmit: () => _manager.submit(_manager.inputController.text),
-            ),
-          ],
-        ),
+      useMaterial3: true,
+    ),
+    home: Scaffold(
+      appBar: AppBar(
+        title: const Text('Calculator'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              // TODO:
+              // - keyboard type
+              // - clear history
+            },
+          ),
+        ],
       ),
-    );
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          History(equationManager: _manager),
+          CalcField(
+            equationManager: _manager,
+          ),
+          Numpad(
+            onEntered: (v) => _manager.inputController.text += v,
+            onSubmit: () => _manager.submit(_manager.inputController.text),
+          ),
+        ],
+      ),
+    ),
+  );
 }
