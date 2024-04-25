@@ -58,6 +58,7 @@ class _MyAppState extends State<MyApp> {
               // TODO:
               // - keyboard type
               // - clear history
+              // - app info
             },
           ),
         ],
