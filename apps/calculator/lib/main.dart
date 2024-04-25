@@ -10,16 +10,32 @@ void main() async {
   await RustLib.init();
   runApp(const MyApp());
 }
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dimensions should be a square that doesn't overflow in half height or
-    // width.
-    final screenSize = MediaQuery.of(context).size;
-    final sideLength = min(screenSize.height / 2, screenSize.width);
-    return MaterialApp(
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late final TextEditingController _controler;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _controler = TextEditingController();
+  }
+
+
+  @override
+  void dispose() {
+    _controler.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
       title: 'Calculator',
       theme: ThemeData(
         colorScheme: const ColorScheme.dark(),
@@ -29,15 +45,16 @@ class MyApp extends StatelessWidget {
         body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(child: const CalcField()),
+            Expanded(
+              child: CalcField(
+              controller: _controler,
+              )
+            ),
             Numpad(
-              onEntered: (v) {
-                print(v);
-              },
+              onEntered: (v) => _controler.text += v,
             ),
           ],
         ),
       ),
     );
-  }
 }

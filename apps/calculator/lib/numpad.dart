@@ -12,23 +12,8 @@ class Numpad extends StatelessWidget {
   /// Multi-character symbols may contain an unclosed opening bracket (`sqrt(`).
   final Function(String entered) onEntered;
 
-  /*Widget _sameCharacterButton(String character, BuildContext context) => Padding(
-    padding: EdgeInsets.all(8),
-    child: Expanded(
-      child: FilledButton(
-        onPressed: () => onEntered(character),
-        child: SizedBox.square(
-          dimension: 80,
-          child: Center(
-            child: Text(character, style: Theme.of(context).textTheme.displayLarge,)
-          )
-        )
-      ),
-    ),
-  );*/
-
   Widget _sameCharacterButton(String character, BuildContext context) => Padding(
-    padding: EdgeInsets.all(3),
+    padding: const EdgeInsets.all(3),
     child: TextButton(
       onPressed: () => onEntered(character),
       child: Text(character),
