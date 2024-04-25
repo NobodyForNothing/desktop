@@ -16,12 +16,20 @@ class Numpad extends StatelessWidget {
   /// Called when the solve button is pressed. 
   final Function() onSubmit;
 
-  Widget _sameCharacterButton(String character, BuildContext context) =>Padding(
+  Widget _sameCharacterButton(String character) => _characterButton(
+    character,
+    () => onEntered(character),
+  );
+  
+  Widget _characterButton(String display, void Function() onPressed) =>
+    _buttonWrapper(TextButton(
+      onPressed: onPressed,
+      child: Text(display),
+    ));
+  
+  Widget _buttonWrapper(Widget child) => Padding(
     padding: const EdgeInsets.all(3),
-    child: TextButton(
-      onPressed: () => onEntered(character),
-      child: Text(character),
-    ),
+    child: child,
   );
 
   @override
@@ -36,10 +44,10 @@ class Numpad extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _sameCharacterButton('+', context),
-            _sameCharacterButton('-', context),
-            _sameCharacterButton('*', context),
-            _sameCharacterButton('/', context),
+            _sameCharacterButton('+'),
+            _sameCharacterButton('-'),
+            _sameCharacterButton('*'),
+            _sameCharacterButton('/'),
           ],
         ),
         Row(
@@ -47,10 +55,10 @@ class Numpad extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _sameCharacterButton('7', context),
-            _sameCharacterButton('8', context),
-            _sameCharacterButton('9', context),
-            _sameCharacterButton('+', context),
+            _sameCharacterButton('7'),
+            _sameCharacterButton('8'),
+            _sameCharacterButton('9'),
+            _sameCharacterButton('.'),
           ],
         ),
         Row(
@@ -58,10 +66,10 @@ class Numpad extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _sameCharacterButton('4', context),
-            _sameCharacterButton('5', context),
-            _sameCharacterButton('6', context),
-            _sameCharacterButton('+', context),
+            _sameCharacterButton('4'),
+            _sameCharacterButton('5'),
+            _sameCharacterButton('6'),
+            _sameCharacterButton('x'),
           ],
         ),
         Row(
@@ -69,13 +77,13 @@ class Numpad extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _sameCharacterButton('1', context),
-            _sameCharacterButton('2', context),
-            _sameCharacterButton('3', context),
-            FilledButton(
+            _sameCharacterButton('1'),
+            _sameCharacterButton('2'),
+            _sameCharacterButton('3'),
+            _buttonWrapper(FilledButton(
               onPressed: onSubmit,
-              child: const Text('=')
-            ),
+              child: const Text('➜')
+            )),
           ],
         ),
         const SizedBox(height: 16,),
