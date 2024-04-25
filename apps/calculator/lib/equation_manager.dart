@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:calculator/src/rust/api/calc.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 class EquationManager {
@@ -12,6 +13,8 @@ class EquationManager {
 
   /// Key for animated history.
   final keys = GlobalKey<AnimatedListState>();
+
+  final historyScrollController = ScrollController();
   
   /// Previously submitted equations and their results.
   Stream<List<(String, String?)>> get history => _history.stream;
@@ -29,6 +32,12 @@ class EquationManager {
           _lastHistory.length - 1,
           duration: const Duration(milliseconds: 500)
       );
+      SchedulerBinding.instance.addPostFrameCallback((_) =>
+        historyScrollController.animateTo(
+          historyScrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease
+      ));
     } else {
       _error.sink.add('Unable to calculate result');
     }

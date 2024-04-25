@@ -48,6 +48,7 @@ class _CalcFieldState extends State<CalcField> {
           stream: widget.equationManager.history,
           builder: (context, snapshot) => AnimatedList(
             key: widget.equationManager.keys,
+            controller: widget.equationManager.historyScrollController,
             initialItemCount: snapshot.data?.length ?? 0,
             itemBuilder: (context, idx, animation) => SlideTransition(
               position: animation.drive(
