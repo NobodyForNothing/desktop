@@ -15,6 +15,32 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`file_entry` - `v0.0.2`](#file_entry---v002)
+ - [`file_preview` - `v0.0.2`](#file_preview---v002)
+
+---
+
+#### `file_entry` - `v0.0.2`
+
+ - **FEAT**: test file_preview.
+
+#### `file_preview` - `v0.0.2`
+
+ - **FEAT**: test file_preview.
+
+
+## 2024-04-26
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`assets` - `v1.0.0`](#assets---v100)
  - [`file_preview` - `v0.0.1+1`](#file_preview---v0011)
  - [`file_entry` - `v0.0.1+1`](#file_entry---v0011)
