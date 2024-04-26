@@ -1,6 +1,7 @@
 import 'package:calculator/src/calculator_logic.dart';
 import 'package:calculator/src/settings_store.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Screen to configure preferences and show version info.
 class Settings extends StatelessWidget {
@@ -12,18 +13,30 @@ class Settings extends StatelessWidget {
   /// Needed to clear history.
   final EquationManager eqManager;
 
-  Widget _buildAppInfo(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      CircleAvatar(
-        radius: MediaQuery.of(context).size.width / 6,
-        backgroundColor: Colors.transparent,
-        child: Image.asset('icon.png', fit: BoxFit.cover,),
-      ),
-      const Text('Calculator'),
-      // TODO
-      Text('v1.0.0', style: Theme.of(context).textTheme.labelMedium,)
-    ],
+  // TODO: open repository
+  Widget _buildAppInfo(BuildContext context) => GestureDetector(
+    onTap: () async {
+      final url = Uri.parse('https://github.com/NobodyForNothing/desktop/');
+      if (await launchUrl(url) && context.mounted) {
+        // TODO: pretty snackbar across all apps
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Couldn't open url")),
+        );
+      }
+    },
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CircleAvatar(
+          radius: MediaQuery.of(context).size.width / 6,
+          backgroundColor: Colors.transparent,
+          child: Image.asset('icon.png', fit: BoxFit.cover,),
+        ),
+        const Text('Calculator'),
+        // TODO
+        Text('v1.0.0', style: Theme.of(context).textTheme.labelMedium,)
+      ],
+    ),
   );
 
   Widget _buildSettings(BuildContext context) => StreamBuilder(

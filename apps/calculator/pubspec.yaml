@@ -14,6 +14,7 @@ dependencies:
   flutter_rust_bridge: ^2.0.0-dev.32
   rust_lib_calculator:
     path: rust_builder
+  url_launcher: ^6.2.6
 
 dev_dependencies:
   flutter_test:
