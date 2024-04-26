@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+ - **FIX**: accessing assets.
+
 ## 0.0.2
 
  - **FEAT**: test file_preview.

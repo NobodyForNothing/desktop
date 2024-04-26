@@ -1,3 +1,7 @@
+## 1.0.1
+
+ - **FIX**: accessing assets.
+
 ## 1.0.0
 
  - Bump "assets" to `1.0.0`.
