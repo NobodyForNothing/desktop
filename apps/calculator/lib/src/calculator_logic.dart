@@ -8,8 +8,8 @@ import 'package:flutter/widgets.dart';
 class EquationManager {
   final List<(String, String?)> _lastHistory = [];
 
-  final _error = StreamController<String?>();
-  final _history = StreamController<List<(String, String?)>>();
+  final _error = StreamController<String?>.broadcast();
+  final _history = StreamController<List<(String, String?)>>.broadcast();
 
   /// Text of the current input field.
   final TextEditingController inputController = TextEditingController();
@@ -41,6 +41,15 @@ class EquationManager {
       _error.sink.add('Unable to calculate result');
     }
   }
+
+  /// Clear the entire calculation history
+  void clearHistory() {
+    _lastHistory.clear();
+    _history.sink.add(_lastHistory);
+  }
+
+  /// Whether there are no items in the history.
+  bool get isHistoryEmpty => _lastHistory.isEmpty;
 
   /// Sets up all managed widgets.
   ///

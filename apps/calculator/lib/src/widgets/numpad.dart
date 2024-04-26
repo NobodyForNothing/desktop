@@ -1,3 +1,4 @@
+import 'package:calculator/src/settings_store.dart';
 import 'package:flutter/material.dart';
 
 /// On screen numpad like field to enter values.
@@ -125,25 +126,30 @@ class Numpad extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) {
-    final primaryKB = _buildPrimaryKeyboard(context);
-    final secondaryKB = _buildSecondaryKeyboard(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            primaryKB,
-            const VerticalDivider(),
-            secondaryKB,
-          ],
+  Widget build(BuildContext context) => StreamBuilder(
+    stream: SettingsStore.stream,
+    builder: (context, snapshot) {
+      if (SettingsStore.hideMath) {
+        return const SizedBox.shrink();
+      }
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildPrimaryKeyboard(context),
+              const VerticalDivider(),
+              _buildSecondaryKeyboard(context),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+  );
     // TODO: swiping when not enough space
-  }
+
 }

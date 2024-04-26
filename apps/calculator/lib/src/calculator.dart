@@ -1,4 +1,5 @@
 import 'package:calculator/src/calculator_logic.dart';
+import 'package:calculator/src/settings.dart';
 import 'package:calculator/src/widgets/calc_field.dart';
 import 'package:calculator/src/widgets/history.dart';
 import 'package:calculator/src/widgets/numpad.dart';
@@ -38,12 +39,9 @@ class _CalculatorState extends State<Calculator> {
       actions: [
         IconButton(
           icon: const Icon(Icons.settings),
-          onPressed: () {
-            // TODO:
-            // - keyboard type
-            // - clear history
-            // - app info
-          },
+          onPressed: () => Navigator.push(context, MaterialPageRoute(
+            builder: (_) => Settings(eqManager: _manager,),
+          )),
         ),
       ],
     ),
