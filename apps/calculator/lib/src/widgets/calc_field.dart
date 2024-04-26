@@ -1,4 +1,4 @@
-import 'package:calculator/equation_manager.dart';
+import 'package:calculator/src/equation_manager.dart';
 import 'package:flutter/material.dart';
 
 /// Field that allows inputting new calculations.
