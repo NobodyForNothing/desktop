@@ -1,10 +1,16 @@
-import 'package:calculator/src/equation_manager.dart';
+import 'package:calculator/src/calculator_logic.dart';
 import 'package:calculator/src/widgets/calc_field.dart';
 import 'package:calculator/src/widgets/history.dart';
 import 'package:calculator/src/widgets/numpad.dart';
 import 'package:flutter/material.dart';
 
+/// Primary calculator screen.
+///
+/// Hosts history, keyboard and input and state management.
 class Calculator extends StatefulWidget {
+  /// Create primary calculator screen.
+  const Calculator({super.key});
+
   @override
   State<Calculator> createState() => _CalculatorState();
 }

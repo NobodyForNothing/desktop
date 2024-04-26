@@ -1,5 +1,5 @@
 import 'package:calculator/src/calculator.dart';
-import 'package:calculator/src/equation_manager.dart';
+import 'package:calculator/src/calculator_logic.dart';
 import 'package:calculator/src/rust/frb_generated.dart';
 import 'package:calculator/src/widgets/calc_field.dart';
 import 'package:calculator/src/widgets/history.dart';
