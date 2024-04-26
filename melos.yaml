@@ -5,6 +5,9 @@ packages:
   - apps/**
   - packages/**
 
+dependencyOverridePaths:
+  - packages/**
+
 ignore:
   - "**/rust_builder/*"
 
