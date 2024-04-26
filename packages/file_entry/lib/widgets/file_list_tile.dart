@@ -8,11 +8,7 @@ import 'package:path/path.dart';
 /// A responsive and adaptive material design list tile for a single file.
 class FileListTile extends StatelessWidget {
   /// Create A responsive and adaptive material list tile for a single file.
-  const FileListTile({
-    super.key,
-    required this.file,
-    required this.options
-  });
+  const FileListTile({super.key, required this.file, required this.options});
 
   /// The disk file to display.
   final File file;
@@ -28,9 +24,7 @@ class FileListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(file.statSync().type == FileSystemEntityType.file);
     return ListTile(
-      leading: FilePreview(
-        file: file
-      ),
+      leading: FilePreview(file: file),
       title: Text(basename(file.path)),
       trailing: PopupMenuButton(
         icon: const Icon(Icons.more_vert),
@@ -40,14 +34,11 @@ class FileListTile extends StatelessWidget {
             child: const Text('Properties'),
             onTap: () {
               showDialog(
-                context: context,
-                builder: (context) => FileInfo(file: file)
-              );
+                  context: context, builder: (context) => FileInfo(file: file));
             },
           )
         ],
       ),
     );
   }
-
 }

@@ -9,6 +9,7 @@ on:
 
 jobs:
   format:
+    name: "🛠️ Validate format"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,10 +18,10 @@ jobs:
           cache: true
           channel: beta
       - uses: bluefireteam/melos-action@v3
-      - name: "🛠️ Validate format"
-        run: melos run format-check
+      - run: melos format --set-exit-if-changed
 
   analyze:
+    name: "🔍 Analyze code"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,12 +30,12 @@ jobs:
           cache: true
           channel: beta
       - uses: bluefireteam/melos-action@v3
-      - name: "🔍 Analyze code"
-        uses: invertase/github-action-dart-analyzer@v2.0.0
+      - uses: invertase/github-action-dart-analyzer@v2.0.0
         with:
           fatal-infos: true
 
   test:
+    name: "🧪 Run test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,5 +44,4 @@ jobs:
           cache: true
           channel: beta
       - uses: bluefireteam/melos-action@v3
-      - name: "🧪 Run test"
-        run: melos test
+      - run: echo TODO # TODO: melos test

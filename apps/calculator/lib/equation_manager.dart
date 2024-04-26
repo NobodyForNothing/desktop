@@ -22,7 +22,7 @@ class EquationManager {
 
   /// Focus node for the equation input
   final FocusNode inputFocus = FocusNode();
-  
+
   /// Previously submitted equations and their results.
   Stream<List<(String, String?)>> get history => _history.stream;
 
@@ -59,16 +59,12 @@ class EquationManager {
   void _addToHistory(String equation, String? result) {
     _lastHistory.add((equation, result));
     _history.sink.add(_lastHistory);
-    keys.currentState?.insertItem(
-      _lastHistory.length - 1,
-      duration: const Duration(milliseconds: 500)
-    );
+    keys.currentState?.insertItem(_lastHistory.length - 1,
+        duration: const Duration(milliseconds: 500));
     SchedulerBinding.instance.addPostFrameCallback((_) =>
-      historyScrollController.animateTo(
-        historyScrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease
-      )
-    );
+        historyScrollController.animateTo(
+            historyScrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.ease));
   }
 }

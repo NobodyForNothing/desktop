@@ -3,14 +3,14 @@ description: "A package to create low resolution previews and icons for files."
 version: 0.0.1
 
 environment:
-  sdk: '>=3.4.0-190.1.beta <4.0.0'
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.2.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  path: ^1.9.0
-  assets: ^1.0.0
+  path: 1.8.3
+  assets: ^0.0.1
 
 dev_dependencies:
   flutter_test:

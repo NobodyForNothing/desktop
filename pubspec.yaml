@@ -2,6 +2,8 @@ name: derdilla_desktop
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.2.0'
+
 dev_dependencies:
   melos: ^5.3.0
   flutter_lints: ^3.0.0

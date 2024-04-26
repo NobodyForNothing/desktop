@@ -9,8 +9,10 @@ sealed class PreviewData {
   ///
   /// Automatically listens for changes in the file and updates the preview
   /// accordingly.
-  static Stream<PreviewData> track(File file) async * {
-    assert(file.statSync().type == FileSystemEntityType.file, 'Expecting files.'
+  static Stream<PreviewData> track(File file) async* {
+    assert(
+        file.statSync().type == FileSystemEntityType.file,
+        'Expecting files.'
         ' Consider creating a directory variant or implementing them here.');
 
     yield GenericFile();
@@ -20,7 +22,7 @@ sealed class PreviewData {
 
     await for (final event in file.watch(events: FileSystemEvent.modify)) {
       assert(event is FileSystemModifyEvent);
-      if((event as FileSystemModifyEvent).contentChanged) {
+      if ((event as FileSystemModifyEvent).contentChanged) {
         data = _analyze(file);
         if (data != null) yield data;
       }
@@ -28,14 +30,14 @@ sealed class PreviewData {
   }
 
   static PreviewData? _analyze(File file) =>
-    switch (extension(file.path.toLowerCase())) {
-      // TODO: content preview and more types
-      // - audio
-      '.png' || '.jpg' || '.jpeg' => ImagePreview(),
-      '.mp4' || '.webm' => VideoPreview(),
-      '.pdf' || '.doc' || '.docx' => DocumentPreview(),
-      String() => null,
-    };
+      switch (extension(file.path.toLowerCase())) {
+        // TODO: content preview and more types
+        // - audio
+        '.png' || '.jpg' || '.jpeg' => ImagePreview(),
+        '.mp4' || '.webm' => VideoPreview(),
+        '.pdf' || '.doc' || '.docx' => DocumentPreview(),
+        String() => null,
+      };
 }
 
 /// File without further information.

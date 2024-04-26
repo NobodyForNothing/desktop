@@ -1,5 +1,20 @@
 name: derdilla_desktop
+repository: https://github.com/NobodyForNothing/desktop
 
 packages:
   - apps/**
   - packages/**
+
+ignore:
+  - "**/rust_builder/*"
+
+scripts:
+  test:
+    run: flutter test
+    exec:
+      concurrency: 1
+      dir-exists: "test"
+  upgrade:
+    run: flutter pub upgrade
+    exec:
+      concurrency: 1

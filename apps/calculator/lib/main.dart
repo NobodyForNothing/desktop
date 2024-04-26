@@ -38,44 +38,44 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Calculator',
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        brightness: Brightness.dark,
-        seedColor: Colors.amber,
-      ),
-      useMaterial3: true,
-    ),
-    home: Scaffold(
-      appBar: AppBar(
-        title: const Text('Calculator'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // TODO:
-              // - keyboard type
-              // - clear history
-              // - app info
-            },
+        debugShowCheckedModeBanner: false,
+        title: 'Calculator',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            brightness: Brightness.dark,
+            seedColor: Colors.amber,
           ),
-        ],
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          History(equationManager: _manager),
-          CalcField(
-            equationManager: _manager,
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+          appBar: AppBar(
+            title: const Text('Calculator'),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  // TODO:
+                  // - keyboard type
+                  // - clear history
+                  // - app info
+                },
+              ),
+            ],
           ),
-          Numpad(
-            onEntered: (v) => _manager.inputController.text += v,
-            onSubmit: () => _manager.submit(_manager.inputController.text),
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              History(equationManager: _manager),
+              CalcField(
+                equationManager: _manager,
+              ),
+              Numpad(
+                onEntered: (v) => _manager.inputController.text += v,
+                onSubmit: () => _manager.submit(_manager.inputController.text),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }

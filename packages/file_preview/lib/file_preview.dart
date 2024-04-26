@@ -16,12 +16,11 @@ class FilePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
-    stream: PreviewData.track(file),
-    builder: (context, snapshot) => switch (snapshot.data) {
-      null || GenericFile() => Assets.genericFile,
-      ImagePreview() => const Icon(Icons.image_outlined),
-      VideoPreview() => const Icon(Icons.video_file_outlined),
-      DocumentPreview() => const Icon(Icons.description_outlined),
-    }
-  );
+      stream: PreviewData.track(file),
+      builder: (context, snapshot) => switch (snapshot.data) {
+            null || GenericFile() => Assets.genericFile,
+            ImagePreview() => const Icon(Icons.image_outlined),
+            VideoPreview() => const Icon(Icons.video_file_outlined),
+            DocumentPreview() => const Icon(Icons.description_outlined),
+          });
 }
