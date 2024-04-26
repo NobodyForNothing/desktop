@@ -4,6 +4,7 @@ import 'package:assets/assets.dart';
 
 void main() {
   testWidgets('should load all assets', (tester) async {
-    tester.pumpWidget(Assets.genericFile);
+    await tester.pumpWidget(Assets.genericFile);
+    await tester.pumpAndSettle();
   });
 }
