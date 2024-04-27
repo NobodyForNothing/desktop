@@ -15,13 +15,13 @@ class PubspecParser {
   /// Cache of the content of the pubspec file.
   final String _pubspec;
 
-  /// Returns the version name (e.g. "v1.0.0").
+  /// Returns the version name (e.g. "1.0.0").
   ///
-  /// Requires that the pubspec file contains a version tag in flutter format
-  /// (`version:<version>+`).
+  /// Requires that the pubspec contains a version key in with a value formated
+  /// like `version: <version>+<buildNum>`.
   Future<String?> getVersionName() async {
-    // Benchmarked: `benchmark/pubspec_parse`
-    final match = RegExp(r'version:(.*)\+').firstMatch(_pubspec);
-    return match?.group(0);
+    // Benchmarked: `benchmark/pubspec_parse.dart`
+    final match = RegExp(r'version\s*:\s*(.*)\+').firstMatch(_pubspec);
+    return match?.group(1);
   }
 }
