@@ -1,5 +1,9 @@
 
-/// Parser for information from the pubspec.yaml file.
+import 'package:meta_info/src/pubspec_builder.dart';
+
+/// Lazy parser for information from the pubspec.yaml file.
+///
+/// Consider using [PubspecBuilder] to obtain a instance.
 class PubspecParser {
   /// Create a new parser for metadata stored in the pubspec file.
   ///
