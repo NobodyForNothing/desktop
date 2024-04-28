@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-04-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`meta_info` - `v0.0.2`](#meta_info---v002)
+
+---
+
+#### `meta_info` - `v0.0.2`
+
+ - **FIX**: test meta_info package.
+ - **FEAT**: add convenience PubspecBuilder.
+ - **FEAT**: pubspec parser.
+
+
 ## 2024-04-26
 
 ### Changes

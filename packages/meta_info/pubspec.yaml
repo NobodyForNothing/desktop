@@ -1,6 +1,6 @@
 name: meta_info
 description: "Provide simple meta information about apps"
-version: 0.0.1
+version: 0.0.2
 homepage:
 
 environment:
