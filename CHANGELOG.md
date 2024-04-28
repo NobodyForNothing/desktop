@@ -15,6 +15,32 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`calculator` - `v1.1.0`](#calculator---v110)
+
+---
+
+#### `calculator` - `v1.1.0`
+
+ - **REFACTOR**: calculator logic.
+ - **REFACTOR**: extract calculator main screen.
+ - **FEAT**: show version in calculator.
+ - **FEAT**: open repository.
+ - **FEAT**: settings.
+ - **FEAT**: add splash.
+
+
+## 2024-04-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`meta_info` - `v0.0.3`](#meta_info---v003)
 
 ---
