@@ -37,7 +37,7 @@ void main() {
     expect(called, isTrue);
   });
   testWidgets('returns contexts pubspec', (tester) async {
-    Future<String?>? version;
+   String? version;
     await tester.pumpWidget(DefaultAssetBundle(
       bundle: _MockBundle(),
       child: PubspecBuilder(
@@ -49,8 +49,6 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
-    expect(version, isNotNull);
-    final v = await version;
-    expect(v, equals('1.0.0'));
+    expect(version, equals('1.0.0'));
   });
 }

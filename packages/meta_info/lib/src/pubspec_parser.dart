@@ -19,7 +19,7 @@ class PubspecParser {
   ///
   /// Requires that the pubspec contains a version key in with a value formated
   /// like `version: <version>+<buildNum>`.
-  Future<String?> getVersionName() async {
+  String? getVersionName() {
     // Benchmarked: `benchmark/pubspec_parse.dart`
     final match = RegExp(r'version\s*:\s*(.*)\+').firstMatch(_pubspec);
     return match?.group(1);

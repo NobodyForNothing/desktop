@@ -41,9 +41,9 @@ flutter:
 ''';
 
 void main() {
-  test('should extract version', () async {
+  test('should extract version', () {
     const parser = PubspecParser(samplePubspec);
-    final version = await parser.getVersionName();
+    final version = parser.getVersionName();
     expect(version, equals('1.0.0'));
   });
 }
