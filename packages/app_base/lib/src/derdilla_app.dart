@@ -20,7 +20,7 @@ class DerdillaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: DerdillaTheme(),
+    theme: derdillaTheme,
     title: title,
     home: home,
   );
