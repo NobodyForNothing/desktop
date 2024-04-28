@@ -2,14 +2,15 @@ name: derdilla_desktop
 repository: https://github.com/NobodyForNothing/desktop
 
 packages:
-  - apps/**
-  - packages/**
+  - apps/*
+  - packages/*
 
 dependencyOverridePaths:
   - packages/**
 
 ignore:
   - "**/rust_builder/*"
+  - "**/build/**"
 
 scripts:
   test:
