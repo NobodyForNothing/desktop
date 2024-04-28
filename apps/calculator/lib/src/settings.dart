@@ -1,6 +1,7 @@
 import 'package:calculator/src/calculator_logic.dart';
 import 'package:calculator/src/settings_store.dart';
 import 'package:flutter/material.dart';
+import 'package:meta_info/meta_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Screen to configure preferences and show version info.
@@ -34,7 +35,15 @@ class Settings extends StatelessWidget {
         ),
         const Text('Calculator'),
         // TODO
-        Text('v1.0.0', style: Theme.of(context).textTheme.labelMedium,)
+        PubspecBuilder(
+          builder: (BuildContext context, PubspecParser? value, _) {
+            if (value == null) return const SizedBox.shrink();
+            return Text(value.getVersionName() ?? 'unknown version',
+              style: Theme.of(context).textTheme.labelMedium,);
+          },
+
+        )
+
       ],
     ),
   );

@@ -5,6 +5,7 @@ import 'package:calculator/src/widgets/calc_field.dart';
 import 'package:calculator/src/widgets/history.dart';
 import 'package:calculator/src/widgets/numpad.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   await RustLib.init();
@@ -27,6 +28,6 @@ class MyApp extends StatelessWidget {
       ),
       useMaterial3: true,
     ),
-    home: Calculator(),
+    home: const Calculator(),
   );
 }

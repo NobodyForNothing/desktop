@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:meta_info/meta_info.dart';
 
 /// Builder with information extracted from the contexts `pubspec.yaml`.
+///
+/// Requires that `pubspec.yaml` is adds itself in the assets section.
 class PubspecBuilder extends StatelessWidget {
   /// Create builder for the information in the contexts `pubspec.yaml`
   const PubspecBuilder({super.key,
