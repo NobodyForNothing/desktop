@@ -8,4 +8,5 @@ void main() async {
     home: const Calculator(),
     title: 'Calculator',
   );
+  // TODO: fix app version
 }
