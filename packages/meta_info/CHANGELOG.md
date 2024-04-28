@@ -1,3 +1,8 @@
+## 0.0.3
+
+ - **FEAT**: show version in calculator.
+ - **FEAT**: make pubspec parser sync.
+
 ## 0.0.2
 
  - **FIX**: test meta_info package.

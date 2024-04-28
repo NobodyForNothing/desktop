@@ -15,6 +15,28 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`meta_info` - `v0.0.3`](#meta_info---v003)
+
+---
+
+#### `meta_info` - `v0.0.3`
+
+ - **FEAT**: show version in calculator.
+ - **FEAT**: make pubspec parser sync.
+
+
+## 2024-04-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`meta_info` - `v0.0.2`](#meta_info---v002)
 
 ---
