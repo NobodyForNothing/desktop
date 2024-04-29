@@ -26,6 +26,9 @@ class FileListTile extends StatelessWidget {
     return ListTile(
       leading: FilePreview(file: file),
       title: Text(basename(file.path)),
+      onTap: () {
+        // TODO
+      },
       trailing: PopupMenuButton(
         icon: const Icon(Icons.more_vert),
         itemBuilder: (BuildContext context) => <PopupMenuEntry>[

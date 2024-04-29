@@ -21,9 +21,15 @@ class _FileManagerState extends State<FileManager> {
     _controller.text = _path;
   }
 
+  Widget _focus(bool autofocus, Widget child) => Focus(
+    autofocus: autofocus,
+    child: child,
+  );
+
   @override
   Widget build(BuildContext context) {
     final entries = Directory(path).listSync();
+    bool first = true;
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: _error == null ? null : 100,
@@ -63,20 +69,26 @@ class _FileManagerState extends State<FileManager> {
       body: ListView(
         children: [
           for (final folder in entries.where((e) => e.statSync().type == FileSystemEntityType.directory))
-            ListTile(
-              leading: Icon(Icons.folder,
-                  color: Theme.of(context).colorScheme.primary),
-              title: Text(p.basename(folder.path)),
-              onTap: () {
-                setState(() {
-                  path = folder.path;
-                });
-              },
+            _focus(
+              () {if (first) {first = false; return true;} return false;}(),
+              ListTile(
+                leading: Icon(Icons.folder_outlined,
+                    color: Theme.of(context).colorScheme.primary),
+                title: Text(p.basename(folder.path)),
+                onTap: () {
+                  setState(() {
+                    path = folder.path;
+                  });
+                },
+              ),
             ),
           for (final file in entries.where((e) => e.statSync().type == FileSystemEntityType.file))
-            FileListTile(
-              file: File(file.path),
-              options: const [],
+            _focus(
+              () {if (first) {first = false; return true;} return false;}(),
+              FileListTile(
+                file: File(file.path),
+                options: const [],
+              ),
             ),
         ],
 
