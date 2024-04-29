@@ -37,7 +37,8 @@ class FileListTile extends StatelessWidget {
             child: const Text('Properties'),
             onTap: () {
               showDialog(
-                  context: context, builder: (context) => FileInfo(file: file));
+                context: context,
+                builder: (context) => FileInfo(file: file));
             },
           )
         ],
