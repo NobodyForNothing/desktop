@@ -1,0 +1,57 @@
+name: 🦀 Rust CI
+
+on:
+  push:
+    paths:
+      - rust/**
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  format:
+    name: "🛠️ Validate format"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    strategy:
+      matrix:
+        toolchain:
+          - beta
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - run: cargo fmt --check --verbose
+
+  test:
+    name: "🧪 Run test"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    strategy:
+      matrix:
+        toolchain:
+          - beta
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - run: cargo test --verbose
+
+  build:
+    name: "🔨 Run build"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
+    strategy:
+      matrix:
+        toolchain:
+          - beta
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - run: cargo build --verbose

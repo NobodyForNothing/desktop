@@ -1,4 +1,4 @@
-name: CI
+name: 🐦 Flutter CI
 
 on:
   workflow_dispatch:
