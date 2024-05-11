@@ -12,11 +12,11 @@ env:
 
 jobs:
   format:
-    name: "🛠️ Validate format"
+    name: "🗒️ Validate format"
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./rust
+        working-directory: rust
     strategy:
       matrix:
         toolchain:
@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./rust
+        working-directory: rust
     strategy:
       matrix:
         toolchain:
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./rust
+        working-directory: rust
     strategy:
       matrix:
         toolchain:
