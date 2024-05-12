@@ -4,14 +4,18 @@ import 'package:file_entry/widgets/file_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
+/// Experimental file manager implementation.
 class FileManager extends StatefulWidget {
+  /// Create experimental file manager.
+  const FileManager({super.key});
+
   @override
   State<FileManager> createState() => _FileManagerState();
 }
 
 class _FileManagerState extends State<FileManager> {
   final _controller = TextEditingController();
-  String? _error = null;
+  String? _error;
 
   String _path = '/home/derdilla/';
 
@@ -68,7 +72,8 @@ class _FileManagerState extends State<FileManager> {
       ),
       body: ListView(
         children: [
-          for (final folder in entries.where((e) => e.statSync().type == FileSystemEntityType.directory))
+          for (final folder in entries.where((e) => e.statSync()
+              .type == FileSystemEntityType.directory))
             _focus(
               () {if (first) {first = false; return true;} return false;}(),
               ListTile(
@@ -82,7 +87,8 @@ class _FileManagerState extends State<FileManager> {
                 },
               ),
             ),
-          for (final file in entries.where((e) => e.statSync().type == FileSystemEntityType.file))
+          for (final file in entries.where((e) => e.statSync()
+              .type == FileSystemEntityType.file))
             _focus(
               () {if (first) {first = false; return true;} return false;}(),
               FileListTile(

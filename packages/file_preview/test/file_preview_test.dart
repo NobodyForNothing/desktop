@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:file_preview/file_preview.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('should initialize', (tester) async {

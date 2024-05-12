@@ -1,7 +1,6 @@
 name: file_entry
 description: "A package for displaying a single file on the file system and listing options."
 version: 0.0.2+1
-homepage:
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -10,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  path: 1.8.3
+  path: 1.9.0
   file_preview: ^0.0.2+1
 
 dev_dependencies:

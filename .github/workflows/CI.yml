@@ -1,6 +1,12 @@
 name: 🐦 Flutter CI
 
 on:
+  push:
+    paths:
+      - apps/**
+      - packages/**
+      - .github/workflows/CI.yml
+  pull_request:
   workflow_dispatch:
 
 jobs:

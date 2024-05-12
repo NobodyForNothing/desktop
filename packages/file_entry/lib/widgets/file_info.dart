@@ -19,8 +19,9 @@ class FileInfo extends StatelessWidget {
     body: ListView(
       children: [
         ListTile(
-          title: Text('Size:'),
-          subtitle: Text('${file.statSync().size} Bytes'), // TODO: check if this is bytest and format
+          title: const Text('Size:'),
+          subtitle: Text('${file.statSync().size} Bytes'),
+          // TODO: check if this is bytes and format for readability
         ),
         /*ListTile(
           title: Text('Created: ${file.}'),
