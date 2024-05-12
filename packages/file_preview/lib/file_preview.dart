@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 /// A smart visual preview for a file.
 class FilePreview extends StatelessWidget {
   /// Create a smart visual preview from a file.
-  const FilePreview({super.key,
-    required this.file
-  });
+  const FilePreview({super.key, required this.file});
 
   /// The disk file to display.
   final File file;

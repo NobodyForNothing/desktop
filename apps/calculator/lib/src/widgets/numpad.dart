@@ -127,29 +127,28 @@ class Numpad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
-    stream: SettingsStore.stream,
-    builder: (context, snapshot) {
-      if (SettingsStore.hideMath) {
-        return const SizedBox.shrink();
-      }
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildPrimaryKeyboard(context),
-              const VerticalDivider(),
-              _buildSecondaryKeyboard(context),
-            ],
+      stream: SettingsStore.stream,
+      builder: (context, snapshot) {
+        if (SettingsStore.hideMath) {
+          return const SizedBox.shrink();
+        }
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildPrimaryKeyboard(context),
+                const VerticalDivider(),
+                _buildSecondaryKeyboard(context),
+              ],
+            ),
           ),
-        ),
-      );
-    }
-  );
-    // TODO: swiping when not enough space
-
+        );
+      });
+  // TODO: swiping when not enough space
 }

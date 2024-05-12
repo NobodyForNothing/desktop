@@ -40,9 +40,7 @@ class TransformationVersionExtraction extends BenchmarkBase {
 
   @override
   void run() {
-    final lines = file
-        .split('\n')
-        .map((e) => e.trim());
+    final lines = file.split('\n').map((e) => e.trim());
     for (final line in lines) {
       if (line.trim().startsWith('version:')) {
         final version = line.split(':')[1].split('+')[0].trim();
@@ -72,24 +70,27 @@ class IterativeVersionExtraction extends BenchmarkBase {
     final List<int> version = [];
     bool firstChar = false;
     for (final c in file.codeUnits) {
-      if (c == 10) { // '\n'
+      if (c == 10) {
+        // '\n'
         firstChar = false;
         continue;
       } else if (firstChar) {
         continue;
       }
-      if (idx >= search.length
-          && c == 43) { // '+' character
+      if (idx >= search.length && c == 43) {
+        // '+' character
         final versionStr = String.fromCharCodes(version);
         assert(versionStr == '1.0.0');
       } else if (idx >= search.length) {
-        if(c != 32) { // ' '
+        if (c != 32) {
+          // ' '
           version.add(c);
         }
       } else if (c == search[idx]) {
         idx++;
       } else {
-        if (c != 32) { // ' '
+        if (c != 32) {
+          // ' '
           firstChar = false;
           continue;
         }

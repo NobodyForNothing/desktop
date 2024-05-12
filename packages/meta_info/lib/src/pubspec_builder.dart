@@ -6,7 +6,8 @@ import 'package:meta_info/meta_info.dart';
 /// Requires that `pubspec.yaml` is adds itself in the assets section.
 class PubspecBuilder extends StatelessWidget {
   /// Create builder for the information in the contexts `pubspec.yaml`
-  const PubspecBuilder({super.key,
+  const PubspecBuilder({
+    super.key,
     required this.builder,
     this.child,
   });
@@ -23,11 +24,11 @@ class PubspecBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => FutureBuilder(
-    future: DefaultAssetBundle.of(context).loadString('pubspec.yaml'),
-    builder: (context, snapshot) {
-      if (snapshot.data == null) return builder(context, null, child);
-      final parser = PubspecParser(snapshot.data!);
-      return builder(context, parser, child);
-    },
-  );
+        future: DefaultAssetBundle.of(context).loadString('pubspec.yaml'),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) return builder(context, null, child);
+          final parser = PubspecParser(snapshot.data!);
+          return builder(context, parser, child);
+        },
+      );
 }

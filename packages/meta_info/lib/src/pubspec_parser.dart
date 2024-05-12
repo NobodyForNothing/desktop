@@ -1,4 +1,3 @@
-
 import 'package:meta_info/src/pubspec_builder.dart';
 
 /// Lazy parser for information from the pubspec.yaml file.

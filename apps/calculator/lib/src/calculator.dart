@@ -33,30 +33,34 @@ class _CalculatorState extends State<Calculator> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Calculator'),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(
-            builder: (_) => Settings(eqManager: _manager,),
-          )),
+        appBar: AppBar(
+          title: const Text('Calculator'),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Settings(
+                      eqManager: _manager,
+                    ),
+                  )),
+            ),
+          ],
         ),
-      ],
-    ),
-    body: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        History(equationManager: _manager),
-        CalcField(
-          equationManager: _manager,
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            History(equationManager: _manager),
+            CalcField(
+              equationManager: _manager,
+            ),
+            Numpad(
+              onEntered: (v) => _manager.inputController.text += v,
+              onSubmit: () => _manager.submit(_manager.inputController.text),
+            ),
+          ],
         ),
-        Numpad(
-          onEntered: (v) => _manager.inputController.text += v,
-          onSubmit: () => _manager.submit(_manager.inputController.text),
-        ),
-      ],
-    ),
-  );
+      );
 }

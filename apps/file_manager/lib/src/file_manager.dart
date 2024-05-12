@@ -26,9 +26,9 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Widget _focus(bool autofocus, Widget child) => Focus(
-    autofocus: autofocus,
-    child: child,
-  );
+        autofocus: autofocus,
+        child: child,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +39,12 @@ class _FileManagerState extends State<FileManager> {
         toolbarHeight: _error == null ? null : 100,
         actions: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                path = p.normalize(p.join(path,'..'));
-              });
-            },
-            icon: const Icon(Icons.arrow_upward)
-          ),
+              onPressed: () {
+                setState(() {
+                  path = p.normalize(p.join(path, '..'));
+                });
+              },
+              icon: const Icon(Icons.arrow_upward)),
         ],
         title: TextField(
           controller: _controller,
@@ -61,9 +60,11 @@ class _FileManagerState extends State<FileManager> {
             }
           },
           onSubmitted: (txt) {
-            if (_error == null) {setState(() {
-              path = txt;
-            });}
+            if (_error == null) {
+              setState(() {
+                path = txt;
+              });
+            }
           },
           decoration: InputDecoration(
             errorText: _error,
@@ -72,10 +73,16 @@ class _FileManagerState extends State<FileManager> {
       ),
       body: ListView(
         children: [
-          for (final folder in entries.where((e) => e.statSync()
-              .type == FileSystemEntityType.directory))
+          for (final folder in entries.where(
+              (e) => e.statSync().type == FileSystemEntityType.directory))
             _focus(
-              () {if (first) {first = false; return true;} return false;}(),
+              () {
+                if (first) {
+                  first = false;
+                  return true;
+                }
+                return false;
+              }(),
               ListTile(
                 leading: Icon(Icons.folder_outlined,
                     color: Theme.of(context).colorScheme.primary),
@@ -87,19 +94,23 @@ class _FileManagerState extends State<FileManager> {
                 },
               ),
             ),
-          for (final file in entries.where((e) => e.statSync()
-              .type == FileSystemEntityType.file))
+          for (final file in entries
+              .where((e) => e.statSync().type == FileSystemEntityType.file))
             _focus(
-              () {if (first) {first = false; return true;} return false;}(),
+              () {
+                if (first) {
+                  first = false;
+                  return true;
+                }
+                return false;
+              }(),
               FileListTile(
                 file: File(file.path),
                 options: const [],
               ),
             ),
         ],
-
       ),
     );
   }
-
 }

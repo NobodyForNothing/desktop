@@ -13,34 +13,34 @@ class FileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(p.basename(file.path)),
-    ),
-    body: ListView(
-      children: [
-        ListTile(
-          title: const Text('Size:'),
-          subtitle: Text('${file.statSync().size} Bytes'),
-          // TODO: check if this is bytes and format for readability
+        appBar: AppBar(
+          title: Text(p.basename(file.path)),
         ),
-        /*ListTile(
+        body: ListView(
+          children: [
+            ListTile(
+              title: const Text('Size:'),
+              subtitle: Text('${file.statSync().size} Bytes'),
+              // TODO: check if this is bytes and format for readability
+            ),
+            /*ListTile(
           title: Text('Created: ${file.}'),
         ),*/
-        ListTile(
-          title: const Text('Last accessed'),
-          subtitle: Text(file.lastAccessedSync().toString()),
+            ListTile(
+              title: const Text('Last accessed'),
+              subtitle: Text(file.lastAccessedSync().toString()),
+            ),
+            ListTile(
+              title: const Text('Last modified'),
+              subtitle: Text(file.lastModifiedSync().toString()),
+            ),
+            // TODO:
+            // - create
+            // - permissions
+            // - editing
+            // - programms to open
+            // - preview
+          ],
         ),
-        ListTile(
-          title: const Text('Last modified'),
-          subtitle: Text(file.lastModifiedSync().toString()),
-        ),
-        // TODO:
-        // - create
-        // - permissions
-        // - editing
-        // - programms to open
-        // - preview
-      ],
-    ),
-  );
+      );
 }

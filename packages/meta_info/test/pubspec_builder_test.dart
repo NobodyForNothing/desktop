@@ -28,16 +28,16 @@ void main() {
     const originalChild = SizedBox(width: 123);
     bool called = false;
     await tester.pumpWidget(PubspecBuilder(
-      child: originalChild,
-      builder: (_, __, passedChild) {
-        expect(passedChild, originalChild);
-        called = true;
-        return passedChild!;
-    }));
+        child: originalChild,
+        builder: (_, __, passedChild) {
+          expect(passedChild, originalChild);
+          called = true;
+          return passedChild!;
+        }));
     expect(called, isTrue);
   });
   testWidgets('returns contexts pubspec', (tester) async {
-   String? version;
+    String? version;
     await tester.pumpWidget(DefaultAssetBundle(
       bundle: _MockBundle(),
       child: PubspecBuilder(
