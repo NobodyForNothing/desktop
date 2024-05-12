@@ -20,17 +20,14 @@ jobs:
           - beta
     steps:
       - uses: actions/checkout@v4
-      - run: cd rust
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - run: rustup component add rustfmt
       - run: cargo fmt --check --verbose
+        working-directory: rust
 
   test:
     name: "🧪 Run test"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: rust
     strategy:
       matrix:
         toolchain:
@@ -39,13 +36,11 @@ jobs:
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - run: cargo test --verbose
+        working-directory: rust
 
   build:
     name: "🔨 Run build"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: rust
     strategy:
       matrix:
         toolchain:
@@ -53,4 +48,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - run: which cargo
       - run: cargo build --verbose
+        working-directory: rust
