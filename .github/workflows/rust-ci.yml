@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - rust/**
+      - .github/workflows/rust-ci.yml
   pull_request:
   workflow_dispatch:
 
@@ -48,6 +49,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
-      - run: which cargo
       - run: cargo build --verbose
         working-directory: rust
