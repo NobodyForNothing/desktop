@@ -28,7 +28,6 @@ jobs:
                ninja-build \
                openjdk-11-jdk-headless \
                pkg-config \
-               tree \
                wget
       - uses: nttld/setup-ndk@v1
         name: Install NDK

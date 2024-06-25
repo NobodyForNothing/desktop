@@ -2,9 +2,9 @@ name: 🦀 Rust CI
 
 on:
   push:
-    paths:
-      - rust/**
-      - .github/workflows/rust-ci.yml
+#    paths:
+#      - rust/**
+#      - .github/workflows/rust-ci.yml
   pull_request:
   workflow_dispatch:
 
