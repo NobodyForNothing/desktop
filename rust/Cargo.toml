@@ -2,5 +2,5 @@
 resolver = "2"
 
 members = [
-    "dir_size",
+    "dir_size", "ini-conf", "vcs",
 ]
