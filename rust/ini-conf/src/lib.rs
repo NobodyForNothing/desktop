@@ -1,10 +1,11 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use log::warn;
 
 pub struct IniFile {
     path: PathBuf,
-    sections: Vec<Section>,
+    sections: HashMap<String, Section>,
 }
 impl IniFile {
     /// Open an existing file
@@ -14,7 +15,10 @@ impl IniFile {
                 if let Some(sections) = Self::parse(data) {
                     Ok(IniFile{
                         path,
-                        sections,
+                        sections: sections
+                            .into_iter()
+                            .map(|sect| (sect.name.to_string(), sect))
+                            .collect()
                     })
                 } else {
                     Err(IniFileOpenError::FormatError)
@@ -42,7 +46,7 @@ impl IniFile {
                 }
                 IniToken::KeyValuePair(key, value) => {
                     if let Some(ref mut curr_sect) = curr_sect {
-                        curr_sect.kv_pairs.push((key, value));
+                        curr_sect.set(key, value);
                     } else {
                         return None;
                     }
@@ -54,19 +58,59 @@ impl IniFile {
         }
         Some(sections)
     }
+
+    pub fn write(&self) -> std::io::Result<()> {
+        let mut string = String::new();
+        for sect in self.sections.values() {
+            string.push_str(format!("[{}]\n", &sect.name).as_str());
+            for (k, v) in &sect.kv {
+                string.push_str(format!("  {} = {}\n", &k, &v).as_str());
+            }
+        }
+        fs::write(&self.path, string)
+    }
+
+    /// Read the value of [key] in [section] if it exists.
+    pub fn get_string(&self, section: &str, key: &str) -> Option<&String> {
+        let sect = self.sections.get(section)?;
+        sect.get(key.to_string())
+    }
+
+    /// Read the value of [key] in [section] if it exists.
+    pub fn get<F: std::str::FromStr>(&self, section: &str, key: &str) -> Option<F> {
+        let str = self.get_string(section, key)?;
+        str.parse::<F>().ok()
+    }
+
+    pub fn set_str(&mut self, section: &str, key: &str, value: &str) {
+        let sect = self.sections
+            .entry(section.to_string())
+            .or_insert(Section::new(section.to_string()));
+        sect.set(key.to_string(), value.to_string());
+    }
+
+    //pub fn set<F: str::traints::ToStr>
 }
 
-pub struct Section {
-    name: String,
-    pub(crate) kv_pairs: Vec<(String, String)>,
+struct Section {
+    pub(crate) name: String,
+    pub(crate) kv: HashMap<String, String>,
 }
 
 impl Section {
     pub(crate) fn new(name: String) -> Self {
         Section {
             name,
-            kv_pairs: Vec::new(),
+            kv: HashMap::new(),
         }
+    }
+
+    pub(crate) fn set(&mut self, key: String, value: String) {
+        self.kv.insert(key, value);
+    }
+
+    pub(crate) fn get(&self, key: String) -> Option<&String> {
+        self.kv.get(&key)
     }
 }
 
@@ -91,7 +135,8 @@ fn tokenize(data: &String) -> Vec<IniToken> {
             IniToken::Empty
         } else if let Some(kv) = line.split_once("="){
             let key= kv.0.trim().to_string();
-            let value= kv.1.trim().to_string();
+            let value= kv.1.trim();
+            let value = value.trim_matches('"').to_string();
             IniToken::KeyValuePair(key, value)
         } else {
             IniToken::Unknown(line.to_string())
