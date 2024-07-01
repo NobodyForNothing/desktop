@@ -1,7 +1,10 @@
 use iniconf::{IniFile, IniFileOpenError};
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use log::warn;
+use crate::git;
+use crate::git::objects::GitObject;
 
 pub struct Repository {
     /// Where the files meant to be in version control live.
@@ -125,6 +128,33 @@ impl Repository {
         } else {
             None
         }
+    }
+
+    fn object_read(&self, sha: [u8; 20]) -> () {
+        let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
+        let path = self.repo_path(vec!["objects", &sha[0..2], &sha[2..sha.len()]], None, Some(true));
+        if path.as_ref().is_some_and(|p| p.is_file()) {
+            if let Ok(data) = fs::read(path.unwrap()) {
+                let mut data = flate2::read::ZlibDecoder::new(&data[..]);
+                let mut data = data.bytes();
+                let mut obj_type = String::new();
+                while let Some(Ok(byte)) = data.next() {
+                    if byte == 20 {
+                        break;
+                    }
+                    obj_type.push(char::from(byte));
+                }
+                let obj = match obj_type.as_str() {
+                    "commit" => GitObject::Commit,
+                    "tree" => GitObject::Tree,
+                    "tag" => GitObject::Tag,
+                    "blob" => GitObject::Blob,
+                    _ => panic!("Unknown type {obj_type} for object {sha}"),
+                };
+            }
+
+        }
+        todo!()
     }
 }
 
