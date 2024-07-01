@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use vcs::Repository;
+use vcs::git::repo::Repository;
 
 fn main() {
     let cli = Cli::parse();
