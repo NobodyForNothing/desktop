@@ -1,7 +1,7 @@
-use iniconf::IniFile;
-use std::{fs, os};
+use iniconf::{IniFile, IniFileOpenError};
+use std::fs;
 use std::path::{Path, PathBuf};
-use log::{log, warn};
+use log::warn;
 
 pub struct Repository {
     /// Where the files meant to be in version control live.
@@ -28,8 +28,8 @@ impl Repository {
 
         if instance.git_dir.is_dir() || force {
             let path = instance.repo_path(vec!("config"), None, Some(true));
-            if path.is_some() || force {
-                instance.config = RepoConfig::read(path.unwrap());
+            if path.as_ref().is_some_and(|p| p.is_file()) || force {
+                instance.config = RepoConfig::read(path.unwrap()).expect("IO is possible as per check above");
                 if instance.config.repository_format_version <= 0 || force {
                     Ok(instance)
                 } else {
@@ -38,6 +38,7 @@ impl Repository {
                         supported: 0,
                     })
                 }
+
             } else {
                 Err(RepositoryLoadError::ConfigurationFileMissing)
             }
@@ -78,7 +79,8 @@ impl Repository {
         fs::write(head, "ref: refs/heads/master\n").ok()?;
 
         let config = repo.repo_path(vec!["config"], Some(false), Some(true))?;
-        repo.config.write(config)?;
+        repo.config = RepoConfig::read(config)?;
+        repo.config.write()?;
 
         Some(())
     }
@@ -146,6 +148,7 @@ pub enum RepositoryInitError {
 }
 
 struct RepoConfig {
+    file: IniFile,
     ///  The version of the gitdir format.
     ///
     /// - 0 means the initial format
@@ -158,26 +161,59 @@ struct RepoConfig {
     // Always assume worktree is at `../`.
 }
 impl RepoConfig {
-    fn read(path: PathBuf) -> Self {
-        //IniFile::open(path)
-        Self::default() // TODO
+    /// Reads repo config from [path].
+    ///
+    /// Replaces the file if badly formatted and removes the file if
+    fn read(path: PathBuf) -> Option<Self> {
+        if path.is_file() || fs::write(&path, "").is_ok() {
+            match IniFile::open(path.clone()) {
+                Ok(file) => {
+                    let version = file.get::<u8>("core", "repositoryformatversion");
+                    let mode = file.get::<bool>("core", "filemode");
+                    let bare = file.get::<bool>("core", "bare");
+                    Some(Self {
+                        file,
+                        repository_format_version: version.unwrap_or(Self::default().repository_format_version),
+                        file_mode: mode.unwrap_or(Self::default().file_mode),
+                        bare: bare.unwrap_or(Self::default().bare),
+                    })
+                },
+                Err(IniFileOpenError::FormatError) => {
+                    warn!("Overriding repo config as it is badly formatted");
+                    if fs::remove_file(&path).is_ok()
+                        && fs::write(&path, "").is_ok() {
+                        if let Ok(file) = IniFile::open(path) {
+                            Some(Self {
+                                file,
+                                ..Self::default()
+                            })
+                        } else {
+                            None
+                        }
+                    } else {
+                        None
+                    }
+                },
+                Err(IniFileOpenError::IOError) => None
+            }
+        } else {
+            None
+        }
+
     }
 
-    fn write(&self, path: PathBuf) -> Option<()> {
-        let txt = format!("[core]\n  repositoryformatversion = {}\n  filemode = {}\n  bare = {}\n",
-            self.repository_format_version,
-            self.file_mode,
-            self.bare,
-        );
+    fn write(&mut self) -> Option<()> {
+        self.file.set_str("core", "repositoryformatversion", format!("{}", self.repository_format_version).as_str());
+        self.file.set_str("core", "filemode", format!("{}", self.file_mode).as_str());
+        self.file.set_str("core", "bare", format!("{}", self.bare).as_str());
 
-        fs::write(path, txt).ok()?;
-
-        Some(())
+        self.file.write().ok()
     }
 }
 impl Default for RepoConfig {
     fn default() -> Self {
         RepoConfig {
+            file: IniFile::default(),
             repository_format_version: 0,
             file_mode: false,
             bare: false,

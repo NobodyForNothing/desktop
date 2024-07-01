@@ -37,7 +37,7 @@ impl IniFile {
         for token in tokenize(&data) {
             match token {
                 IniToken::Empty => {}
-                IniToken::Comment(_) => {}
+                IniToken::Comment => {}
                 IniToken::SectionHeader(name) => {
                     if let Some(curr_sect) = curr_sect {
                         sections.push(curr_sect);
@@ -88,8 +88,15 @@ impl IniFile {
             .or_insert(Section::new(section.to_string()));
         sect.set(key.to_string(), value.to_string());
     }
+}
 
-    //pub fn set<F: str::traints::ToStr>
+impl Default for IniFile {
+    fn default() -> Self {
+        Self {
+            path: PathBuf::default(),
+            sections: HashMap::default(),
+        }
+    }
 }
 
 struct Section {
@@ -127,7 +134,7 @@ fn tokenize(data: &String) -> Vec<IniToken> {
     for line in data.lines() {
         let line = line.trim();
         let t = if line.starts_with(";") || line.starts_with("#") {
-            IniToken::Comment(line.to_string())
+            IniToken::Comment
         } else if line.starts_with("[") && line.ends_with("]") {
             let header = &line[1..(line.len()-1)];
             IniToken::SectionHeader(header.to_string())
@@ -148,7 +155,7 @@ fn tokenize(data: &String) -> Vec<IniToken> {
 
 enum IniToken {
     Empty,
-    Comment(String),
+    Comment,
     SectionHeader(String),
     KeyValuePair(String, String),
     Unknown(String),
