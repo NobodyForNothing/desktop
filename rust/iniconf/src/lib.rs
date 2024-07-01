@@ -3,12 +3,13 @@ use std::fs;
 use std::path::PathBuf;
 use log::warn;
 
+#[derive(Debug)]
 pub struct IniFile {
     path: PathBuf,
     sections: HashMap<String, Section>,
 }
 impl IniFile {
-    /// Open an existing file
+    /// Open an existing file or create a reference to a new file.
     pub fn open(path: PathBuf) -> Result<Self, IniFileOpenError> {
         if path.is_file() {
             if let Ok(data) = fs::read_to_string(&path) {
@@ -27,7 +28,11 @@ impl IniFile {
                 Err(IniFileOpenError::IOError)
             }
         } else {
-            Err(IniFileOpenError::IOError)
+            // File doesn't exist
+            Ok(IniFile{
+                path,
+                ..Self::default()
+            })
         }
     }
 
@@ -99,6 +104,7 @@ impl Default for IniFile {
     }
 }
 
+#[derive(Debug)]
 struct Section {
     pub(crate) name: String,
     pub(crate) kv: HashMap<String, String>,
@@ -121,8 +127,9 @@ impl Section {
     }
 }
 
+#[derive(Debug)]
 pub enum IniFileOpenError {
-    /// File is doesn't exist, is read protected, ect...
+    /// File is read protected, ect...
     IOError,
     /// File is in invalid format.
     FormatError,

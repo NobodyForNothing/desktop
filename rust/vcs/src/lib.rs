@@ -27,9 +27,9 @@ impl Repository {
         };
 
         if instance.git_dir.is_dir() || force {
-            let path = instance.repo_path(vec!("config"), None, Some(true));
-            if path.as_ref().is_some_and(|p| p.is_file()) || force {
-                instance.config = RepoConfig::read(path.unwrap()).expect("IO is possible as per check above");
+            let path = instance.git_dir.join("config");
+            if path.is_file() || force {
+                instance.config = RepoConfig::read(path).expect("IO is possible as per check above");
                 if instance.config.repository_format_version <= 0 || force {
                     Ok(instance)
                 } else {
@@ -163,10 +163,15 @@ struct RepoConfig {
 impl RepoConfig {
     /// Reads repo config from [path].
     ///
-    /// Replaces the file if badly formatted and removes the file if
+    /// Replaces the file if badly formatted.
     fn read(path: PathBuf) -> Option<Self> {
-        if path.is_file() || fs::write(&path, "").is_ok() {
-            match IniFile::open(path.clone()) {
+        if path.parent().is_some_and(|p| !p.is_dir()) {
+            fs::create_dir_all(path.parent().unwrap()).ok()?;
+        }
+        if !(path.is_dir() || path.is_symlink()) {
+            let x  =IniFile::open(path.clone());
+            println!("{:#?}", &x);
+            match x {
                 Ok(file) => {
                     let version = file.get::<u8>("core", "repositoryformatversion");
                     let mode = file.get::<bool>("core", "filemode");
@@ -180,8 +185,7 @@ impl RepoConfig {
                 },
                 Err(IniFileOpenError::FormatError) => {
                     warn!("Overriding repo config as it is badly formatted");
-                    if fs::remove_file(&path).is_ok()
-                        && fs::write(&path, "").is_ok() {
+                    if fs::remove_file(&path).is_ok() {
                         if let Ok(file) = IniFile::open(path) {
                             Some(Self {
                                 file,
@@ -194,9 +198,13 @@ impl RepoConfig {
                         None
                     }
                 },
-                Err(IniFileOpenError::IOError) => None
+                Err(IniFileOpenError::IOError) => {
+                    warn!("Couldn't open ini file: IOError");
+                    None
+                }
             }
         } else {
+            warn!("Tried to read config from directory or symlink.");
             None
         }
 
