@@ -1,5 +1,5 @@
+use iniconf::IniFile;
 use std::{fs, os};
-use std::fs::{create_dir, create_dir_all};
 use std::path::{Path, PathBuf};
 use log::{log, warn};
 
@@ -47,39 +47,40 @@ impl Repository {
     }
 
     pub fn init(path: PathBuf) -> Result<Self, RepositoryInitError> {
-        let repo = Self::new(path, Some(true)).ok().expect("Force is passed");
+        let mut repo = Self::new(path, Some(true)).ok().expect("Force is passed");
         if repo.work_tree.is_file() || repo.work_tree.is_symlink() {
             Err(RepositoryInitError::NotADirectory)
         } else if repo.git_dir.read_dir().is_ok_and(|dir| dir.count() > 0) {
             Err(RepositoryInitError::AlreadyInitialized)
         } else {
-            let success: Option<()> = {
-                if !repo.git_dir.exists() {
-                    create_dir_all(&repo.git_dir).ok()?;
-                }
-
-                repo.repo_path(vec!["branches"], Some(true), Some(false))?;
-                repo.repo_path(vec!["objects"], Some(true), Some(false))?;
-                repo.repo_path(vec!["refs", "tags"], Some(true), Some(false))?;
-                repo.repo_path(vec!["refs", "heads"], Some(true), Some(false))?;
-
-                let desc = repo.repo_path(vec!["description"], Some(false), Some(true))?;
-                fs::write(desc, "Unnamed repository; edit this file 'description' to name the repository.\n")?;
-
-                let head = repo.repo_path(vec!["HEAD"], Some(false), Some(true))?;
-                fs::write(head, "ref: refs/heads/master\n")?;
-
-                let config = repo.repo_path(vec!["config"], Some(false), Some(true))?;
-                repo.config.write(config)?;
-
-                Some(())
-            };
-            if success.is_none() {
+            if Self::init_fs(&mut repo).is_none() {
                 Err(RepositoryInitError::IOError)
             } else {
                 Ok(repo)
             }
         }
+    }
+
+    fn init_fs(repo: &mut Repository) -> Option<()> {
+        if !repo.git_dir.exists() {
+            fs::create_dir_all(&repo.git_dir).ok()?;
+        }
+
+        repo.repo_path(vec!["branches"], Some(true), Some(false))?;
+        repo.repo_path(vec!["objects"], Some(true), Some(false))?;
+        repo.repo_path(vec!["refs", "tags"], Some(true), Some(false))?;
+        repo.repo_path(vec!["refs", "heads"], Some(true), Some(false))?;
+
+        let desc = repo.repo_path(vec!["description"], Some(false), Some(true))?;
+        fs::write(desc, "Unnamed repository; edit this file 'description' to name the repository.\n").ok()?;
+
+        let head = repo.repo_path(vec!["HEAD"], Some(false), Some(true))?;
+        fs::write(head, "ref: refs/heads/master\n").ok()?;
+
+        let config = repo.repo_path(vec!["config"], Some(false), Some(true))?;
+        repo.config.write(config)?;
+
+        Some(())
     }
 
     /// Compute path under repo's gitdir.
@@ -107,10 +108,10 @@ impl Repository {
         }
         if mkdir {
             if res_path.exists() && !res_path.is_dir() {
-                panic!("Tried to create dir where there already was a file: {}", &res_path);
+                panic!("Tried to create dir where there already was a file: {:?}", &res_path);
             }
-            if std::fs::create_dir_all(&res_path).is_err() {
-                warn!("Failed to create {}", &res_path);
+            if fs::create_dir_all(&res_path).is_err() {
+                warn!("Failed to create {:?}", &res_path);
             }
         }
 
@@ -126,7 +127,7 @@ impl Repository {
 }
 
 #[derive(Debug)]
-enum RepositoryLoadError {
+pub enum RepositoryLoadError {
     NotAGitRepository,
     ConfigurationFileMissing,
     UnsupportedRepositoryFormatVersion {
@@ -138,7 +139,7 @@ enum RepositoryLoadError {
 }
 
 #[derive(Debug)]
-enum RepositoryInitError {
+pub enum RepositoryInitError {
     NotADirectory,
     AlreadyInitialized,
     IOError,
@@ -158,6 +159,7 @@ struct RepoConfig {
 }
 impl RepoConfig {
     fn read(path: PathBuf) -> Self {
+        //IniFile::open(path)
         Self::default() // TODO
     }
 
@@ -168,7 +170,7 @@ impl RepoConfig {
             self.bare,
         );
 
-        fs::write(path, txt)?;
+        fs::write(path, txt).ok()?;
 
         Some(())
     }

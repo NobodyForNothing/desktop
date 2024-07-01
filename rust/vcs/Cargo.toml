@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.5.8", features = ["derive"] }
 log = "0.4.22"
+iniconf = { path = "../iniconf", version = "1.0.0"}
