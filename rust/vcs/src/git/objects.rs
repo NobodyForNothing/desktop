@@ -13,6 +13,7 @@ pub enum GitObject {
 }
 
 /// Like [GitObject], but without data.
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, clap::ValueEnum)]
 pub enum GitObjectType {
     Commit,
     Tree,

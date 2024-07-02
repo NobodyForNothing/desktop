@@ -132,8 +132,12 @@ impl Repository {
         }
     }
 
+    pub fn object_find(&self, name: String, fmt: GitObjectType, follow: bool) -> String {
+        name
+    }
+
     /// Load a git object by hash.
-    fn object_read(&self, sha: String) -> Option<GitObject> {
+    pub fn object_read(&self, sha: String) -> Option<GitObject> {
         // let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
         let path = self.repo_path(vec!["objects", &sha[0..2], &sha[2..sha.len()]], None, Some(true));
         if path.as_ref().is_some_and(|p| p.is_file()) {
