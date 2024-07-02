@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use log::warn;
 use sha1::{Sha1, Digest};
 use crate::git;
-use crate::git::objects::{GitBlob, GitObject, BinSerializable};
+use crate::git::objects::{GitBlob, GitObject, BinSerializable, GitObjectType};
 
 pub struct Repository {
     /// Where the files meant to be in version control live.
@@ -132,8 +132,9 @@ impl Repository {
         }
     }
 
-    fn object_read(&self, sha: [u8; 20]) -> Option<GitObject> {
-        let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
+    /// Load a git object by hash.
+    fn object_read(&self, sha: String) -> Option<GitObject> {
+        // let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
         let path = self.repo_path(vec!["objects", &sha[0..2], &sha[2..sha.len()]], None, Some(true));
         if path.as_ref().is_some_and(|p| p.is_file()) {
             if let Ok(data) = fs::read(path.unwrap()) {
@@ -173,6 +174,7 @@ impl Repository {
         None
     }
 
+    /// Store a git object in the repo data and return its hash.
     pub fn object_write(&self, obj: GitObject) -> String {
         let obj = obj.serialize();
         let mut hasher = Sha1::new();
@@ -189,6 +191,21 @@ impl Repository {
         }
 
         sha
+    }
+
+    /// Store a file at [path] in the repo.
+    pub fn hash_object(&self, path: PathBuf, format: GitObjectType) {
+        if let Ok(data) = fs::read(path) {
+            let data = match format {
+                GitObjectType::Commit => todo!(),
+                GitObjectType::Tree => todo!(),
+                GitObjectType::Tag => todo!(),
+                GitObjectType::Blob => GitObject::Blob(GitBlob::deserialize(data)),
+            };
+            self.object_write(data);
+        }
+
+
     }
 }
 

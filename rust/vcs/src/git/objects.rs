@@ -1,7 +1,7 @@
 
 pub(crate) trait BinSerializable {
+    /// Read git object contents without header or compression.
     fn deserialize(data: Vec<u8>) -> Self;
-
     fn serialize(self) -> Vec<u8>;
 }
 
@@ -12,8 +12,16 @@ pub enum GitObject {
     Blob(GitBlob),
 }
 
+/// Like [GitObject], but without data.
+pub enum GitObjectType {
+    Commit,
+    Tree,
+    Tag,
+    Blob,
+}
+
 impl GitObject {
-    /// Serialize a git object including the header.
+    /// Serialize a git object including the header and compression.
     pub fn serialize(&self) -> Vec<u8> {
         todo!()
     }
