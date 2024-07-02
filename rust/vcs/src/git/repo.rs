@@ -1,10 +1,12 @@
+use std::ffi::OsStr;
 use iniconf::{IniFile, IniFileOpenError};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use log::warn;
+use sha1::{Sha1, Digest};
 use crate::git;
-use crate::git::objects::GitObject;
+use crate::git::objects::{GitBlob, GitObject, BinSerializable};
 
 pub struct Repository {
     /// Where the files meant to be in version control live.
@@ -130,7 +132,7 @@ impl Repository {
         }
     }
 
-    fn object_read(&self, sha: [u8; 20]) -> () {
+    fn object_read(&self, sha: [u8; 20]) -> Option<GitObject> {
         let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
         let path = self.repo_path(vec!["objects", &sha[0..2], &sha[2..sha.len()]], None, Some(true));
         if path.as_ref().is_some_and(|p| p.is_file()) {
@@ -144,17 +146,49 @@ impl Repository {
                     }
                     obj_type.push(char::from(byte));
                 }
+
+                let mut obj_len = String::new();
+                while let Some(Ok(byte)) = data.next() {
+                    if byte == 0x00 {
+                        break;
+                    }
+                    obj_len.push(char::from(byte));
+                }
+                let obj_len = obj_len.parse::<u64>().expect("GitObject doesn't contain size");
+
+                let remaining_bits: Vec<u8> = data.map(|e| e.unwrap()).collect();
+                assert_eq!(obj_len as usize, remaining_bits.len());
+
                 let obj = match obj_type.as_str() {
                     "commit" => GitObject::Commit,
                     "tree" => GitObject::Tree,
                     "tag" => GitObject::Tag,
-                    "blob" => GitObject::Blob,
+                    "blob" => GitObject::Blob(GitBlob::deserialize(remaining_bits)),
                     _ => panic!("Unknown type {obj_type} for object {sha}"),
                 };
+                return Some(obj);
             }
 
         }
-        todo!()
+        None
+    }
+
+    pub fn object_write(&self, obj: GitObject) -> String {
+        let obj = obj.serialize();
+        let mut hasher = Sha1::new();
+        hasher.update(&obj);
+        let sha = hasher.finalize();
+        let sha: String = sha.iter().map(|byte| format!("{:x}", byte)).collect();
+
+
+        let path = self.repo_path(vec!["objects", &sha[..2], &sha[2..]], Some(true), Some(true));
+        if let Some(path) = path {
+            if !path.exists() {
+                fs::write(path, obj).unwrap();
+            }
+        }
+
+        sha
     }
 }
 
