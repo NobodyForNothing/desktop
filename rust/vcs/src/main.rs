@@ -1,3 +1,4 @@
+use std::ffi::CString;
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
@@ -28,6 +29,16 @@ fn main() {
                 }
             }
         }
+        Some(Commands::HashObject { obj_type, path }) => {
+            let repo = Repository::new(PathBuf::from(cli.repo_path), None);
+            match repo {
+                Err(err) => eprintln!("{:?}", err),
+                Ok(repo) => {
+                    let sha = repo.hash_object(PathBuf::from(path), obj_type);
+                    println!("{:?}", sha);
+                }
+            }
+        }
     }
 
 }
@@ -48,6 +59,7 @@ enum Commands {
         #[arg(default_value = ".")]
         path: String,
     },
+    /// Provide content of repository objects
     #[command(subcommand_value_name = "cat-file")]
     CatFile {
         #[arg(value_enum, value_name = "TYPE")]
@@ -55,4 +67,13 @@ enum Commands {
         #[arg(value_name = "OBJECT")]
         object: String,
     },
+    /// Compute object ID and optionally creates a blob from a file
+    #[command(subcommand_value_name = "cat-file")]
+    HashObject {
+        /// Specify the type.
+        #[arg(value_enum, long, short, value_name = "TYPE", default_value = "blob")]
+        obj_type: GitObjectType,
+        // Read object from <file>
+        path: String,
+    }
 }

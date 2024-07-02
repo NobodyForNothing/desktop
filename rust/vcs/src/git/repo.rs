@@ -198,18 +198,15 @@ impl Repository {
     }
 
     /// Store a file at [path] in the repo.
-    pub fn hash_object(&self, path: PathBuf, format: GitObjectType) {
-        if let Ok(data) = fs::read(path) {
-            let data = match format {
-                GitObjectType::Commit => todo!(),
-                GitObjectType::Tree => todo!(),
-                GitObjectType::Tag => todo!(),
-                GitObjectType::Blob => GitObject::Blob(GitBlob::deserialize(data)),
-            };
-            self.object_write(data);
-        }
-
-
+    pub fn hash_object(&self, path: PathBuf, format: GitObjectType) -> Option<String> {
+        let data = fs::read(path).ok()?;
+        let data = match format {
+            GitObjectType::Commit => todo!(),
+            GitObjectType::Tree => todo!(),
+            GitObjectType::Tag => todo!(),
+            GitObjectType::Blob => GitObject::Blob(GitBlob::deserialize(data)),
+        };
+        Some(self.object_write(data))
     }
 }
 
