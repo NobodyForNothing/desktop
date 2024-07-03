@@ -146,7 +146,7 @@ impl Repository {
                 let mut data = data.bytes();
                 let mut obj_type = String::new();
                 while let Some(Ok(byte)) = data.next() {
-                    if byte == 20 {
+                    if byte == b' ' {
                         break;
                     }
                     obj_type.push(char::from(byte));
