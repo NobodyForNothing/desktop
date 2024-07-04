@@ -1,4 +1,4 @@
-use std::io::{Bytes, Read};
+use std::io::{Bytes, Error, Read};
 
 pub(crate) trait BinSerializable {
     /// Read git object contents without header or compression.
@@ -60,6 +60,8 @@ pub struct GitCommit {
 }
 
 impl GitCommit {
+    // TODO: constructor (no setters as immutable)
+
     /// Reference to a tree object.
     pub fn get_tree(&self) -> Option<String> {
         self.kvlm
@@ -120,6 +122,72 @@ impl BinSerializable for GitCommit {
 
     fn serialize(self) -> Vec<u8> {
         kvlm_serialize(self.kvlm)
+    }
+}
+
+pub struct GitTree {
+    entries: Vec<GitTreeEntry>,
+}
+
+impl BinSerializable for GitTree {
+    fn deserialize(data: Vec<u8>) -> Self {
+        let mut data = data.bytes().peekable();
+        let mut entries = Vec::new();
+        while data.peek().is_some() {
+            entries.push(GitTreeEntry::parse(&mut data));
+        }
+        GitTree { entries }
+    }
+
+    fn serialize(self) -> Vec<u8> {
+        todo!()
+    }
+}
+
+pub struct GitTreeEntry {
+    /// Hash of a tree or a blob.
+    obj_hash: String,
+    /// File perm mode.
+    mode: [u8; 6],
+    /// File or dir name.
+    path: String,
+}
+
+impl GitTreeEntry {
+    /// Decodes format: `[mode] space [path] 0x00 [sha-1]`.
+    fn parse(data: &mut impl Iterator<Item = Result<u8, Error>>) -> Self {
+        let mut mode: [u8; 6] = [0; 6];
+        let mut i = 0;
+        while let Some(Ok(byte)) = data.next() {
+            if byte == b' ' {
+                break;
+            }
+            println!("{}", char::from(byte));
+            if i >= mode.len() {
+                println!("{} >= {}", i, mode.len());
+                panic!("Incorrectly formatted git tree entry: mode too long")
+            }
+            mode[i] = byte;
+            i += 1;
+        }
+
+        let mut path = String::new();
+        while let Some(Ok(byte)) = data.next() {
+            if byte == 0x00 {
+                break;
+            }
+            path.push(char::from(byte));
+        }
+
+        let hash = data.take(40); // 2 chars per hex byte
+        let hash = hash.map(|e| e.unwrap());
+        let hash = String::from_utf8(hash.collect::<Vec<u8>>());
+
+        GitTreeEntry {
+            mode,
+            path,
+            obj_hash: hash.expect("invlaid hash"),
+        }
     }
 }
 
@@ -204,7 +272,7 @@ fn kvlm_serialize(kvlm: Vec<(String, String)>) -> Vec<u8> {
 mod tests {
     use std::io::Read;
 
-    use crate::git::objects::{kvlm_parse, BinSerializable, GitCommit};
+    use crate::git::objects::{kvlm_parse, BinSerializable, GitCommit, GitTree};
 
     const SAMPLE_COMMIT: &str = "tree 29ff16c9c14e2652b22f8b78bb08a5a07930c147
 parent 206941306e8a8af65b66eaaaea388a7ae24d49a0
@@ -292,6 +360,36 @@ Create first draft";
         assert_eq!(
             commit.get_message(),
             Some(String::from("Create first draft"))
+        );
+    }
+
+    #[test]
+    fn git_tree_deserialize() {
+        let mut txt = "100644 testfile\x0029ff16c9c14e2652b22f8b78bb08a5a07930c147"
+            .as_bytes()
+            .to_vec();
+        txt.append(
+            &mut "100645 some other test files.txt\x00206941306e8a8af65b66eaaaea388a7ae24d49a0"
+                .as_bytes()
+                .to_vec(),
+        );
+        let tree = GitTree::deserialize(txt);
+
+        assert_eq!(tree.entries.len(), 2);
+        assert_eq!(tree.entries.get(0).unwrap().mode, "100644".as_bytes());
+        assert_eq!(tree.entries.get(0).unwrap().path, "testfile");
+        assert_eq!(
+            tree.entries.get(0).unwrap().obj_hash,
+            "29ff16c9c14e2652b22f8b78bb08a5a07930c147"
+        );
+        assert_eq!(tree.entries.get(1).unwrap().mode, "100645".as_bytes());
+        assert_eq!(
+            tree.entries.get(1).unwrap().path,
+            "some other test files.txt"
+        );
+        assert_eq!(
+            tree.entries.get(1).unwrap().obj_hash,
+            "206941306e8a8af65b66eaaaea388a7ae24d49a0"
         );
     }
 }
