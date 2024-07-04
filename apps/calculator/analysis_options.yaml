@@ -2,3 +2,5 @@ analyzer:
   exclude:
     - rust/**
     - rust_builder/**
+    - lib/**/*generated.dart
+    - lib/**/*generated.*.dart
