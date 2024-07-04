@@ -1,7 +1,7 @@
+use log::warn;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use log::warn;
 
 #[derive(Debug)]
 pub struct IniFile {
@@ -14,12 +14,12 @@ impl IniFile {
         if path.is_file() {
             if let Ok(data) = fs::read_to_string(&path) {
                 if let Some(sections) = Self::parse(data) {
-                    Ok(IniFile{
+                    Ok(IniFile {
                         path,
                         sections: sections
                             .into_iter()
                             .map(|sect| (sect.name.to_string(), sect))
-                            .collect()
+                            .collect(),
                     })
                 } else {
                     Err(IniFileOpenError::FormatError)
@@ -29,7 +29,7 @@ impl IniFile {
             }
         } else {
             // File doesn't exist
-            Ok(IniFile{
+            Ok(IniFile {
                 path,
                 ..Self::default()
             })
@@ -88,7 +88,8 @@ impl IniFile {
     }
 
     pub fn set_str(&mut self, section: &str, key: &str, value: &str) {
-        let sect = self.sections
+        let sect = self
+            .sections
             .entry(section.to_string())
             .or_insert(Section::new(section.to_string()));
         sect.set(key.to_string(), value.to_string());
@@ -135,7 +136,6 @@ pub enum IniFileOpenError {
     FormatError,
 }
 
-
 fn tokenize(data: &String) -> Vec<IniToken> {
     let mut tokens = Vec::new();
     for line in data.lines() {
@@ -143,13 +143,13 @@ fn tokenize(data: &String) -> Vec<IniToken> {
         let t = if line.starts_with(";") || line.starts_with("#") {
             IniToken::Comment
         } else if line.starts_with("[") && line.ends_with("]") {
-            let header = &line[1..(line.len()-1)];
+            let header = &line[1..(line.len() - 1)];
             IniToken::SectionHeader(header.to_string())
         } else if line.is_empty() {
             IniToken::Empty
-        } else if let Some(kv) = line.split_once("="){
-            let key= kv.0.trim().to_string();
-            let value= kv.1.trim();
+        } else if let Some(kv) = line.split_once("=") {
+            let key = kv.0.trim().to_string();
+            let value = kv.1.trim();
             let value = value.trim_matches('"').to_string();
             IniToken::KeyValuePair(key, value)
         } else {
