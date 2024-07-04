@@ -1,12 +1,10 @@
-use std::ffi::OsStr;
 use iniconf::{IniFile, IniFileOpenError};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use log::warn;
 use sha1::{Sha1, Digest};
-use crate::git;
-use crate::git::objects::{GitBlob, GitObject, BinSerializable, GitObjectType};
+use crate::git::objects::{GitBlob, GitObject, BinSerializable, GitObjectType, GitCommit};
 
 pub struct Repository {
     /// Where the files meant to be in version control live.
@@ -142,7 +140,7 @@ impl Repository {
         let path = self.repo_path(vec!["objects", &sha[0..2], &sha[2..sha.len()]], None, Some(true));
         if path.as_ref().is_some_and(|p| p.is_file()) {
             if let Ok(data) = fs::read(path.unwrap()) {
-                let mut data = flate2::read::ZlibDecoder::new(&data[..]);
+                let data = flate2::read::ZlibDecoder::new(&data[..]);
                 let mut data = data.bytes();
                 let mut obj_type = String::new();
                 while let Some(Ok(byte)) = data.next() {
@@ -165,7 +163,7 @@ impl Repository {
                 assert_eq!(obj_len as usize, remaining_bits.len());
 
                 let obj = match obj_type.as_str() {
-                    "commit" => GitObject::Commit,
+                    "commit" => GitObject::Commit(GitCommit::deserialize(remaining_bits)),
                     "tree" => GitObject::Tree,
                     "tag" => GitObject::Tag,
                     "blob" => GitObject::Blob(GitBlob::deserialize(remaining_bits)),
