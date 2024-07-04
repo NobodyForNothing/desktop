@@ -46,9 +46,7 @@ pub struct GitBlob {
 
 impl BinSerializable for GitBlob {
     fn deserialize(data: Vec<u8>) -> Self {
-        Self {
-            data
-        }
+        Self { data }
     }
 
     fn serialize(self) -> Vec<u8> {
@@ -64,10 +62,11 @@ pub struct GitCommit {
 impl GitCommit {
     /// Reference to a tree object.
     pub fn get_tree(&self) -> Option<String> {
-         self.kvlm
-             .iter().filter(|(k,_)| k == "tree")
-             .map(|(_k,v)| v.trim_matches(|e| e == '\n').to_string())
-             .next()
+        self.kvlm
+            .iter()
+            .filter(|(k, _)| k == "tree")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
+            .next()
     }
     /// References to commits this commit is based on.
     ///
@@ -75,37 +74,41 @@ impl GitCommit {
     /// - the first commit may have none
     pub fn get_parents(&self) -> Vec<String> {
         self.kvlm
-            .iter().filter(|(k,_)| k == "parent")
+            .iter()
+            .filter(|(k, _)| k == "parent")
             .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
             .collect::<Vec<String>>()
     }
     /// Like: `Scott Chacon <schacon@gmail.com> 1243040974 -0700`
     pub fn get_author(&self) -> Option<String> {
         self.kvlm
-            .iter().filter(|(k,_)| k == "author")
-            .map(|(_k,v)| v.trim_matches(|e| e == '\n').to_string())
+            .iter()
+            .filter(|(k, _)| k == "author")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
             .next()
     }
     pub fn get_commiter(&self) -> Option<String> {
         self.kvlm
-            .iter().filter(|(k,_)| k == "committer")
-            .map(|(_k,v)| v.trim_matches(|e| e == '\n').to_string())
+            .iter()
+            .filter(|(k, _)| k == "committer")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
             .next()
     }
     /// PGP signature of the object.
     pub fn get_gpgsig(&self) -> Option<String> {
         self.kvlm
-            .iter().filter(|(k,_)| k == "gpgsig")
-            .map(|(_k,v)| v.trim_matches(|e| e == '\n').to_string())
+            .iter()
+            .filter(|(k, _)| k == "gpgsig")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
             .next()
     }
     pub fn get_message(&self) -> Option<String> {
         self.kvlm
-            .iter().filter(|(k,_)| k == "__message__")
-            .map(|(_k,v)| v.trim_matches(|e| e == '\n').to_string())
+            .iter()
+            .filter(|(k, _)| k == "__message__")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
             .next()
     }
-
 }
 
 impl BinSerializable for GitCommit {
@@ -159,7 +162,6 @@ fn kvlm_parse(mut raw: Bytes<&[u8]>) -> Vec<(String, String)> {
                 }
                 in_message_block = true;
                 value = String::new();
-
             } else {
                 // New value: save old kv and start new
                 if let Some(last_key) = key {
@@ -174,7 +176,6 @@ fn kvlm_parse(mut raw: Bytes<&[u8]>) -> Vec<(String, String)> {
                     value = v.to_string();
                 } // non conformant lines are ignored as comments
             }
-
         }
 
         if in_message_block {
@@ -185,7 +186,8 @@ fn kvlm_parse(mut raw: Bytes<&[u8]>) -> Vec<(String, String)> {
     kv_entries
 }
 
-fn kvlm_serialize(kvlm: Vec<(String, String)>) -> Vec<u8> { // TODO: test
+fn kvlm_serialize(kvlm: Vec<(String, String)>) -> Vec<u8> {
+    // TODO: test
     let mut out = String::new();
     for (k, v) in kvlm {
         if k == "__message__" {
@@ -202,7 +204,7 @@ fn kvlm_serialize(kvlm: Vec<(String, String)>) -> Vec<u8> { // TODO: test
 mod tests {
     use std::io::Read;
 
-    use crate::git::objects::{BinSerializable, GitCommit, kvlm_parse};
+    use crate::git::objects::{kvlm_parse, BinSerializable, GitCommit};
 
     const SAMPLE_COMMIT: &str = "tree 29ff16c9c14e2652b22f8b78bb08a5a07930c147
 parent 206941306e8a8af65b66eaaaea388a7ae24d49a0
@@ -230,17 +232,31 @@ Create first draft";
         let parsed = kvlm_parse(SAMPLE_COMMIT.as_bytes().bytes());
         // TODO: verify \n is wanted
         assert_eq!(parsed.get(0).unwrap().0, "tree");
-        assert_eq!(parsed.get(0).unwrap().1, "29ff16c9c14e2652b22f8b78bb08a5a07930c147\n");
+        assert_eq!(
+            parsed.get(0).unwrap().1,
+            "29ff16c9c14e2652b22f8b78bb08a5a07930c147\n"
+        );
         assert_eq!(parsed.get(1).unwrap().0, "parent");
-        assert_eq!(parsed.get(1).unwrap().1, "206941306e8a8af65b66eaaaea388a7ae24d49a0\n");
+        assert_eq!(
+            parsed.get(1).unwrap().1,
+            "206941306e8a8af65b66eaaaea388a7ae24d49a0\n"
+        );
         assert_eq!(parsed.get(2).unwrap().0, "author");
-        assert_eq!(parsed.get(2).unwrap().1, "Thibault Polge <thibault@thb.lt> 1527025023 +0200\n");
+        assert_eq!(
+            parsed.get(2).unwrap().1,
+            "Thibault Polge <thibault@thb.lt> 1527025023 +0200\n"
+        );
         assert_eq!(parsed.get(3).unwrap().0, "committer");
-        assert_eq!(parsed.get(3).unwrap().1, "Thibault Polge <thibault@thb.lt> 1527025044 +0200\n");
+        assert_eq!(
+            parsed.get(3).unwrap().1,
+            "Thibault Polge <thibault@thb.lt> 1527025044 +0200\n"
+        );
         assert_eq!(parsed.get(4).unwrap().0, "gpgsig");
         let v4 = parsed.get(4).unwrap().1.clone();
         assert!(v4.clone().contains("-----BEGIN PGP SIGNATURE-----"));
-        assert!(v4.clone().contains("iQIzBAABCAAdFiEExwXquOM8bWb4Q2zVGxM2FxoLkGQFAlsEjZQACgkQGxM2FxoL"));
+        assert!(v4
+            .clone()
+            .contains("iQIzBAABCAAdFiEExwXquOM8bWb4Q2zVGxM2FxoLkGQFAlsEjZQACgkQGxM2FxoL"));
         assert!(v4.contains("-----END PGP SIGNATURE-----"));
         assert_eq!(parsed.get(5).unwrap().0, "__message__");
         assert_eq!(parsed.get(5).unwrap().1, "Create first draft");
@@ -249,11 +265,33 @@ Create first draft";
     #[test]
     fn git_commit_deserialize() {
         let commit = GitCommit::deserialize(SAMPLE_COMMIT.as_bytes().to_vec());
-        assert_eq!(commit.get_tree(), Some(String::from("29ff16c9c14e2652b22f8b78bb08a5a07930c147")));
-        assert_eq!(commit.get_parents().iter().next().unwrap().clone(), String::from("206941306e8a8af65b66eaaaea388a7ae24d49a0"));
-        assert_eq!(commit.get_author(), Some(String::from("Thibault Polge <thibault@thb.lt> 1527025023 +0200")));
-        assert_eq!(commit.get_commiter(), Some(String::from("Thibault Polge <thibault@thb.lt> 1527025044 +0200")));
-        assert!(commit.get_gpgsig().unwrap().contains("iQIzBAABCAAdFiEExwXquOM8bWb4Q2zVGxM2FxoLkGQFAlsEjZQACgkQGxM2FxoL"));
-        assert_eq!(commit.get_message(), Some(String::from("Create first draft")));
+        assert_eq!(
+            commit.get_tree(),
+            Some(String::from("29ff16c9c14e2652b22f8b78bb08a5a07930c147"))
+        );
+        assert_eq!(
+            commit.get_parents().iter().next().unwrap().clone(),
+            String::from("206941306e8a8af65b66eaaaea388a7ae24d49a0")
+        );
+        assert_eq!(
+            commit.get_author(),
+            Some(String::from(
+                "Thibault Polge <thibault@thb.lt> 1527025023 +0200"
+            ))
+        );
+        assert_eq!(
+            commit.get_commiter(),
+            Some(String::from(
+                "Thibault Polge <thibault@thb.lt> 1527025044 +0200"
+            ))
+        );
+        assert!(commit
+            .get_gpgsig()
+            .unwrap()
+            .contains("iQIzBAABCAAdFiEExwXquOM8bWb4Q2zVGxM2FxoLkGQFAlsEjZQACgkQGxM2FxoL"));
+        assert_eq!(
+            commit.get_message(),
+            Some(String::from("Create first draft"))
+        );
     }
 }

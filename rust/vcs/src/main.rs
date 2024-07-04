@@ -1,8 +1,8 @@
+use clap::{Parser, Subcommand};
 use std::ffi::CString;
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use clap::{Parser, Subcommand};
 use vcs::git::objects::{GitObject, GitObjectType};
 use vcs::git::repo::{Repository, RepositoryLoadError};
 
@@ -10,7 +10,7 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         None => println!("Unrecognized command"),
-        Some(Commands::Init {path}) => {
+        Some(Commands::Init { path }) => {
             Repository::init(path.parse().unwrap()).unwrap();
         }
         Some(Commands::CatFile { obj_type, object }) => {
@@ -21,10 +21,10 @@ fn main() {
                     let obj = repo.object_read(repo.object_find(object, obj_type, true));
                     match obj {
                         None => println!("No object found"),
-                        Some(obj) =>{
+                        Some(obj) => {
                             io::stdout().lock().write(&*obj.serialize()).unwrap();
                             io::stdout().lock().flush().unwrap();
-                        },
+                        }
                     }
                 }
             }
@@ -40,7 +40,6 @@ fn main() {
             }
         }
     }
-
 }
 
 #[derive(Parser)]
@@ -75,5 +74,5 @@ enum Commands {
         obj_type: GitObjectType,
         // Read object from <file>
         path: String,
-    }
+    },
 }
