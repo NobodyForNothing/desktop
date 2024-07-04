@@ -8,7 +8,7 @@ pub(crate) trait BinSerializable {
 
 pub enum GitObject {
     Commit(GitCommit),
-    Tree,
+    Tree(GitTree),
     Tag,
     Blob(GitBlob),
 }
@@ -29,7 +29,9 @@ impl GitObject {
             GitObject::Commit(commit) => {
                 commit.serialize();
             }
-            GitObject::Tree => {}
+            GitObject::Tree(tree) => {
+                tree.serialize();
+            }
             GitObject::Tag => {}
             GitObject::Blob(blob) => {
                 blob.serialize();
@@ -42,6 +44,12 @@ impl GitObject {
 /// Raw userdata.
 pub struct GitBlob {
     data: Vec<u8>,
+}
+
+impl GitBlob {
+    pub fn data(&self) -> &Vec<u8> {
+        &self.data
+    }
 }
 
 impl BinSerializable for GitBlob {
@@ -129,6 +137,12 @@ pub struct GitTree {
     entries: Vec<GitTreeEntry>,
 }
 
+impl GitTree {
+    pub fn entries(&self) -> &Vec<GitTreeEntry> {
+        self.entries.as_ref()
+    }
+}
+
 impl BinSerializable for GitTree {
     fn deserialize(data: Vec<u8>) -> Self {
         let mut data = data.bytes().peekable();
@@ -188,6 +202,19 @@ impl GitTreeEntry {
             path,
             obj_hash: hash.expect("invlaid hash"),
         }
+    }
+
+    /// Hash of a tree or a blob.
+    pub fn obj_hash(&self) -> &String {
+        self.obj_hash.as_ref()
+    }
+    /// File perm mode.
+    pub fn mode(&self) -> [u8; 6] {
+        self.mode
+    }
+    /// File or dir name.
+    pub fn path(&self) -> &String {
+        self.path.as_ref()
     }
 }
 

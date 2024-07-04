@@ -1,4 +1,4 @@
-use crate::git::objects::{BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType};
+use crate::git::objects::{BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTree};
 use iniconf::{IniFile, IniFileOpenError};
 use log::warn;
 use sha1::{Digest, Sha1};
@@ -229,6 +229,30 @@ impl Repository {
             GitObjectType::Blob => GitObject::Blob(GitBlob::deserialize(data)),
         };
         Some(self.object_write(data))
+    }
+
+    /// Checks out a git tree to an empty (except git dir) work tree.
+    pub fn tree_checkout(&self, tree: GitTree) -> bool {
+        let dir = &self.work_tree.read_dir().expect("Work tree no longer exists");
+        assert!(dir.as_ref().count() <= 1, "Work tree no empty");
+
+        self.tree_checkout_inner(tree, &self.work_tree).is_some()
+    }
+    fn tree_checkout_inner(&self, tree: GitTree, path: &PathBuf) -> Option<()> {
+        for entry in tree.entries() {
+            let path = path.join(entry.path());
+            match self.object_read(entry.obj_hash().clone()) {
+                Some(GitObject::Tree(tree)) => {
+                    fs::create_dir(&path)?;
+                    self.tree_checkout_inner(tree, &path)?;
+                }
+                Some(GitObject::Blob(blob)) => {
+                    fs::write(&path, blob.data())?;
+                }
+                _ => {},
+            }
+        }
+        Some(())
     }
 }
 
