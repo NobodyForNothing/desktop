@@ -206,7 +206,7 @@ impl GitTreeEntry {
 
     /// Hash of a tree or a blob.
     pub fn obj_hash(&self) -> &String {
-        self.obj_hash.as_ref()
+        &self.obj_hash
     }
     /// File perm mode.
     pub fn mode(&self) -> [u8; 6] {
@@ -214,7 +214,7 @@ impl GitTreeEntry {
     }
     /// File or dir name.
     pub fn path(&self) -> &String {
-        self.path.as_ref()
+        &self.path
     }
 }
 

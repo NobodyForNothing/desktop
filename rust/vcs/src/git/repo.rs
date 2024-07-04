@@ -6,6 +6,8 @@ use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
+const MAX_REF_RESOLVE_DEPTH: u8 = 100;
+
 pub struct Repository {
     /// Where the files meant to be in version control live.
     work_tree: PathBuf,
@@ -186,7 +188,7 @@ impl Repository {
 
                 let obj = match obj_type.as_str() {
                     "commit" => GitObject::Commit(GitCommit::deserialize(remaining_bits)),
-                    "tree" => GitObject::Tree,
+                    "tree" => GitObject::Tree(GitTree::deserialize(remaining_bits)),
                     "tag" => GitObject::Tag,
                     "blob" => GitObject::Blob(GitBlob::deserialize(remaining_bits)),
                     _ => panic!("Unknown type {obj_type} for object {sha}"),
@@ -233,8 +235,8 @@ impl Repository {
 
     /// Checks out a git tree to an empty (except git dir) work tree.
     pub fn tree_checkout(&self, tree: GitTree) -> bool {
-        let dir = &self.work_tree.read_dir().expect("Work tree no longer exists");
-        assert!(dir.as_ref().count() <= 1, "Work tree no empty");
+        let mut dir = self.work_tree.read_dir().expect("Work tree no longer exists");
+        assert!(dir.count() <= 1, "Work tree no empty");
 
         self.tree_checkout_inner(tree, &self.work_tree).is_some()
     }
@@ -243,16 +245,44 @@ impl Repository {
             let path = path.join(entry.path());
             match self.object_read(entry.obj_hash().clone()) {
                 Some(GitObject::Tree(tree)) => {
-                    fs::create_dir(&path)?;
+                    fs::create_dir(&path).ok()?;
                     self.tree_checkout_inner(tree, &path)?;
                 }
                 Some(GitObject::Blob(blob)) => {
-                    fs::write(&path, blob.data())?;
+                    fs::write(&path, blob.data()).ok()?;
                 }
                 _ => {},
             }
         }
         Some(())
+    }
+
+    /// Resolve a git ref (file path after ref) to a full object hash.
+    fn ref_resolve(&self, git_ref: &String) -> Option<String> {
+        self.ref_resolve_inner(git_ref, 0)
+    }
+
+    /// Resolve a git ref (file path after ref) to a full object hash.
+    fn ref_resolve_inner(&self, git_ref: &String, depth: u8) -> Option<String> {
+        if depth > MAX_REF_RESOLVE_DEPTH {
+            panic!("ref_resolve_inner failed to resolve ref: MAX_REF_RESOLVE_DEPTH exceeded");
+        }
+
+        let mut git_ref = git_ref.split("/").map(|e| e.to_string()).collect::<Vec<String>>();
+        let mut path = vec!["ref".to_string()];
+        path.append(&mut git_ref);
+        let path = self.repo_path(path, None, Some(true))?;
+
+        let mut data = fs::read_to_string(path).ok()?;
+        if let Some(stripped) = data.strip_suffix("\n") {
+            data = stripped.to_string();
+        }
+
+        if data.starts_with("ref: ") {
+            self.ref_resolve_inner(&data[5..].to_string(), depth + 1)
+        } else {
+            Some(data)
+        }
     }
 }
 
