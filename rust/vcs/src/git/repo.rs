@@ -1,4 +1,5 @@
-use crate::git::objects::{BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTree};
+use std::fmt::format;
+use crate::git::objects::{BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTag, GitTree};
 use iniconf::{IniFile, IniFileOpenError};
 use log::warn;
 use sha1::{Digest, Sha1};
@@ -148,8 +149,8 @@ impl Repository {
         }
     }
 
-    pub fn object_find(&self, name: String, fmt: GitObjectType, follow: bool) -> String {
-        name
+    pub fn object_find(&self, name: String, fmt: Option<GitObjectType>, follow: bool) -> Option<String> {
+        Some(name)
     }
 
     /// Load a git object by hash.
@@ -189,7 +190,7 @@ impl Repository {
                 let obj = match obj_type.as_str() {
                     "commit" => GitObject::Commit(GitCommit::deserialize(remaining_bits)),
                     "tree" => GitObject::Tree(GitTree::deserialize(remaining_bits)),
-                    "tag" => GitObject::Tag,
+                    "tag" => GitObject::Tag(GitTag::deserialize(remaining_bits)),
                     "blob" => GitObject::Blob(GitBlob::deserialize(remaining_bits)),
                     _ => panic!("Unknown type {obj_type} for object {sha}"),
                 };
@@ -283,6 +284,23 @@ impl Repository {
         } else {
             Some(data)
         }
+    }
+
+    /// Create a [name]d reference to an object [hash].
+    fn ref_create(&self, name: String, hash: String) -> Option<()> {
+        let path = self.repo_path(vec!["refs".to_string(), name], None, Some(true))?;
+        fs::write(path, format!("{hash}\n")).ok()
+    }
+
+    /// Store a tag object and reference it in a tag ref.
+    ///
+    /// For tag refs without tag object ise [ref_create].
+    pub fn create_tag(&self, tag: GitTag) -> Option<()> {
+        let path = PathBuf::from("tags");
+        let path = path.join(tag.tag()?);
+        let tag_ref = self.object_write(GitObject::Tag(tag));
+
+        self.ref_create(path.to_str()?.to_string(), tag_ref)
     }
 }
 

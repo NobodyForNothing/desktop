@@ -9,7 +9,7 @@ pub(crate) trait BinSerializable {
 pub enum GitObject {
     Commit(GitCommit),
     Tree(GitTree),
-    Tag,
+    Tag(GitTag),
     Blob(GitBlob),
 }
 
@@ -27,17 +27,18 @@ impl GitObject {
     pub fn serialize(self) -> Vec<u8> {
         match self {
             GitObject::Commit(commit) => {
-                commit.serialize();
+                commit.serialize()
             }
             GitObject::Tree(tree) => {
-                tree.serialize();
+                tree.serialize()
             }
-            GitObject::Tag => {}
+            GitObject::Tag(tag) => {
+                tag.serialize()
+            }
             GitObject::Blob(blob) => {
-                blob.serialize();
+                blob.serialize()
             }
         }
-        todo!()
     }
 }
 
@@ -124,6 +125,70 @@ impl GitCommit {
 impl BinSerializable for GitCommit {
     fn deserialize(data: Vec<u8>) -> Self {
         GitCommit {
+            kvlm: kvlm_parse(data.bytes()),
+        }
+    }
+
+    fn serialize(self) -> Vec<u8> {
+        kvlm_serialize(self.kvlm)
+    }
+}
+
+#[derive(Clone)]
+pub struct GitTag {
+    kvlm: Vec<(String, String)>,
+}
+
+impl GitTag {
+    pub fn new(obj_hash: String, tag_name: String, tagger: String, message: String) -> Self {
+        let kvlm = Vec::new();
+        kvlm["object"] = obj_hash;
+        kvlm["type"] = "commit";
+        kvlm["tag"] = tag_name;
+        kvlm["tagger"] = tagger;
+        kvlm["__message__"] = message;
+        GitTag {
+            kvlm
+        }
+    }
+
+    pub fn object_hash(&self) -> Option<String> {
+        self.kvlm
+            .iter()
+            .filter(|(k, _)| k == "object")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
+            .next()
+    }
+
+    /// Get the name of the tag.
+    pub fn tag(&self) -> Option<String> {
+        self.kvlm
+            .iter()
+            .filter(|(k, _)| k == "tag")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
+            .next()
+    }
+
+    pub fn tagger(&self) -> Option<String> {
+        self.kvlm
+            .iter()
+            .filter(|(k, _)| k == "tagger")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
+            .next()
+    }
+
+    pub fn get_message(&self) -> Option<String> {
+        self.kvlm
+            .iter()
+            .filter(|(k, _)| k == "__message__")
+            .map(|(_k, v)| v.trim_matches(|e| e == '\n').to_string())
+            .next()
+    }
+}
+
+impl BinSerializable for GitTag {
+    fn deserialize(data: Vec<u8>) -> Self {
+        GitTag {
             kvlm: kvlm_parse(data.bytes()),
         }
     }
