@@ -4,7 +4,7 @@ use std::io;
 use std::io::Write;
 use std::path::PathBuf;
 use vcs::git::objects::{GitObject, GitObjectType};
-use vcs::git::repo::{Repository, RepositoryLoadError};
+use vcs::git::repo::{ObjectRefResult, Repository, RepositoryLoadError};
 
 fn main() {
     let cli = Cli::parse();
@@ -18,7 +18,11 @@ fn main() {
             match repo {
                 Err(err) => eprintln!("{:?}", err),
                 Ok(repo) => {
-                    let obj = repo.object_read(repo.object_find(object, obj_type, true));
+                    let obj = if let ObjectRefResult::Ok(obj_ref) = repo.object_find(object) {
+                        repo.object_read(obj_ref)
+                    } else {
+                        None
+                    };
                     match obj {
                         None => println!("No object found"),
                         Some(obj) => {

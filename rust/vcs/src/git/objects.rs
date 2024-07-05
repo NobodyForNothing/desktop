@@ -26,18 +26,10 @@ impl GitObject {
     /// Serialize a git object including the header and compression.
     pub fn serialize(self) -> Vec<u8> {
         match self {
-            GitObject::Commit(commit) => {
-                commit.serialize()
-            }
-            GitObject::Tree(tree) => {
-                tree.serialize()
-            }
-            GitObject::Tag(tag) => {
-                tag.serialize()
-            }
-            GitObject::Blob(blob) => {
-                blob.serialize()
-            }
+            GitObject::Commit(commit) => commit.serialize(),
+            GitObject::Tree(tree) => tree.serialize(),
+            GitObject::Tag(tag) => tag.serialize(),
+            GitObject::Blob(blob) => blob.serialize(),
         }
     }
 }
@@ -147,9 +139,7 @@ impl GitTag {
         kvlm.push(("tag".to_string(), tag_name));
         kvlm.push(("tagger".to_string(), tagger));
         kvlm.push(("__message__".to_string(), message));
-        GitTag {
-            kvlm
-        }
+        GitTag { kvlm }
     }
 
     pub fn object_hash(&self) -> Option<String> {

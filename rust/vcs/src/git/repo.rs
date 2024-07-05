@@ -1,8 +1,10 @@
-use std::fmt::format;
-use crate::git::objects::{BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTag, GitTree};
+use crate::git::objects::{
+    BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTag, GitTree,
+};
 use iniconf::{IniFile, IniFileOpenError};
 use log::warn;
 use sha1::{Digest, Sha1};
+use std::fmt::format;
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -176,7 +178,8 @@ impl Repository {
                     ObjectRefResult::Ok(matching.first().unwrap().to_str().unwrap().to_string())
                 } else if matching.len() < 1 {
                     ObjectRefResult::NoResult
-                } else { // if matching.count() > 1 {
+                } else {
+                    // if matching.count() > 1 {
                     ObjectRefResult::TooManyResults
                 }
             } else {
@@ -301,7 +304,10 @@ impl Repository {
 
     /// Checks out a git tree to an empty (except git dir) work tree.
     pub fn tree_checkout(&self, tree: GitTree) -> bool {
-        let mut dir = self.work_tree.read_dir().expect("Work tree no longer exists");
+        let mut dir = self
+            .work_tree
+            .read_dir()
+            .expect("Work tree no longer exists");
         assert!(dir.count() <= 1, "Work tree no empty");
 
         self.tree_checkout_inner(tree, &self.work_tree).is_some()
@@ -317,7 +323,7 @@ impl Repository {
                 Some(GitObject::Blob(blob)) => {
                     fs::write(&path, blob.data()).ok()?;
                 }
-                _ => {},
+                _ => {}
             }
         }
         Some(())
@@ -334,7 +340,10 @@ impl Repository {
             panic!("ref_resolve_inner failed to resolve ref: MAX_REF_RESOLVE_DEPTH exceeded");
         }
 
-        let mut git_ref = git_ref.split("/").map(|e| e.to_string()).collect::<Vec<String>>();
+        let mut git_ref = git_ref
+            .split("/")
+            .map(|e| e.to_string())
+            .collect::<Vec<String>>();
         let mut path = vec!["ref".to_string()];
         path.append(&mut git_ref);
         let path = self.repo_path(path, None, Some(true))?;
@@ -476,7 +485,7 @@ impl Default for RepoConfig {
     }
 }
 
-enum ObjectRefResult {
+pub enum ObjectRefResult {
     Ok(String),
     NoResult,
     TooManyResults,
