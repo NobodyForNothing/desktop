@@ -141,12 +141,12 @@ pub struct GitTag {
 
 impl GitTag {
     pub fn new(obj_hash: String, tag_name: String, tagger: String, message: String) -> Self {
-        let kvlm = Vec::new();
-        kvlm["object"] = obj_hash;
-        kvlm["type"] = "commit";
-        kvlm["tag"] = tag_name;
-        kvlm["tagger"] = tagger;
-        kvlm["__message__"] = message;
+        let mut kvlm = Vec::new();
+        kvlm.push(("object".to_string(), obj_hash));
+        kvlm.push(("type".to_string(), "commit".to_string()));
+        kvlm.push(("tag".to_string(), tag_name));
+        kvlm.push(("tagger".to_string(), tagger));
+        kvlm.push(("__message__".to_string(), message));
         GitTag {
             kvlm
         }

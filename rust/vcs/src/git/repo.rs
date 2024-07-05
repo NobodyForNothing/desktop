@@ -149,8 +149,73 @@ impl Repository {
         }
     }
 
-    pub fn object_find(&self, name: String, fmt: Option<GitObjectType>, follow: bool) -> Option<String> {
-        Some(name)
+    pub fn object_find(&self, name: String) -> ObjectRefResult {
+        let name = name.trim();
+        let obj_hash = if name == "HEAD" {
+            if let Some(head) = self.head() {
+                ObjectRefResult::Ok(head)
+            } else {
+                ObjectRefResult::NoResult
+            }
+        } else if name.len() == 6 {
+            let path = self.repo_path(vec!["objects", &name[0..2]], None, None);
+            if let Some(path) = path {
+                let mut matching = Vec::new();
+                if let Ok(dir) = fs::read_dir(path) {
+                    for entry in dir {
+                        if let Ok(entry) = entry {
+                            let entry = entry.path();
+                            if entry.starts_with(&name[2..6]) {
+                                matching.push(entry);
+                            }
+                        }
+                    }
+                }
+
+                if matching.len() == 1 {
+                    ObjectRefResult::Ok(matching.first().unwrap().to_str().unwrap().to_string())
+                } else if matching.len() < 1 {
+                    ObjectRefResult::NoResult
+                } else { // if matching.count() > 1 {
+                    ObjectRefResult::TooManyResults
+                }
+            } else {
+                ObjectRefResult::NoResult
+            }
+        } else if name.len() == 20 {
+            ObjectRefResult::Ok(name.to_string())
+        } else {
+            ObjectRefResult::NotARef
+        };
+
+        if let ObjectRefResult::Ok(obj_hash) = obj_hash {
+            let path = self.repo_path(
+                vec!["objects", &obj_hash[0..2], &obj_hash[2..obj_hash.len()]],
+                None,
+                Some(true),
+            );
+            if path.is_some_and(|p| p.is_file()) {
+                ObjectRefResult::Ok(obj_hash)
+            } else {
+                ObjectRefResult::PointsToDeletedRef
+            }
+        } else {
+            obj_hash
+        }
+    }
+
+    fn head(&self) -> Option<String> {
+        let obj_ref = self.repo_path(vec!["HEAD"], None, Some(true))?;
+        let obj_ref = fs::read_to_string(obj_ref).ok()?;
+        if let Some(obj_ref) = obj_ref.strip_prefix("ref: ") {
+            let obj_ref = self.ref_resolve(&obj_ref.to_string())?;
+            Some(obj_ref)
+            // object_ref can only be full ref
+        } else if let ObjectRefResult::Ok(hash) = self.object_find(obj_ref) {
+            Some(hash)
+        } else {
+            None
+        }
     }
 
     /// Load a git object by hash.
@@ -409,4 +474,12 @@ impl Default for RepoConfig {
             bare: false,
         }
     }
+}
+
+enum ObjectRefResult {
+    Ok(String),
+    NoResult,
+    TooManyResults,
+    PointsToDeletedRef,
+    NotARef,
 }
