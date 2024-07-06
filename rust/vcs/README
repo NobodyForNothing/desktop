@@ -1,0 +1,13 @@
+Rust implementation of [git](https://git-scm.com/) inspired by [wyag](https://wyag.thb.lt/).
+
+The project is finished once it supports the following git subcommands:
+- git init
+- git add
+- git remove
+- git commit
+- git checkout
+- git status
+
+A secondary goal of this project is to determine pain points in the
+implementation and to find out what abstractions are useful and which aren't in
+order to implement a more sophisticated vcs that can be used as a daily driver.
