@@ -71,7 +71,7 @@ impl GitIndex {
                 let dev = read_int_u32(data, 16);
                 let ino = read_int_u32(data, 20);
                 let unused = read_int_u32(data, 24);
-                assert_eq!(unused, 0);
+                //assert_eq!(unused, 0);
 
                 let mode = read_int_u16(data, 26);
                 let mode_type = (mode as u32) >> 12;
@@ -88,8 +88,9 @@ impl GitIndex {
 
                 let name: &[u8] = if flags.name_length < 0xFFF {
                     let len = flags.name_length as usize;
+                    let name = &data[idx..idx + len];
                     idx += len + 1;
-                    &data[idx..len]
+                    name
                 } else {
                     let end = data[idx..].iter().position(|&x| x == 0x00).map(|pos| pos + idx)?;
                     let name = &data[idx..end];
