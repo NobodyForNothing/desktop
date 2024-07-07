@@ -92,7 +92,10 @@ impl GitIndex {
                     idx += len + 1;
                     name
                 } else {
-                    let end = data[idx..].iter().position(|&x| x == 0x00).map(|pos| pos + idx)?;
+                    let end = data[idx..]
+                        .iter()
+                        .position(|&x| x == 0x00)
+                        .map(|pos| pos + idx)?;
                     let name = &data[idx..end];
                     idx = end + 1;
                     name

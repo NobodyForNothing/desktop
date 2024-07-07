@@ -1,16 +1,16 @@
-use std::collections::BTreeMap;
+use crate::git::index::GitIndex;
 use crate::git::objects::{
     BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTag, GitTree,
 };
 use iniconf::{IniFile, IniFileOpenError};
 use log::warn;
 use sha1::{Digest, Sha1};
+use std::collections::BTreeMap;
 use std::fmt::format;
 use std::fs;
 use std::hash::Hash;
 use std::io::Read;
 use std::path::{Path, PathBuf};
-use crate::git::index::GitIndex;
 
 const MAX_REF_RESOLVE_DEPTH: u8 = 100;
 
@@ -392,7 +392,10 @@ impl Repository {
                 let mut entries = index.entries();
                 for index_entry in entries {
                     if head.get(&index_entry.0).is_some() {
-                        if head.get(&index_entry.0).is_some_and(|e| e != &index_entry.1) {
+                        if head
+                            .get(&index_entry.0)
+                            .is_some_and(|e| e != &index_entry.1)
+                        {
                             modified.push(index_entry.0.clone());
                         }
                         deleted.remove(&index_entry.0);
@@ -401,8 +404,12 @@ impl Repository {
                     }
                 }
                 Some((added, deleted, modified))
-            } else { None }
-        } else { None };
+            } else {
+                None
+            }
+        } else {
+            None
+        };
 
         if let Some((added, deleted, modified)) = res {
             Some(GitStatus {
@@ -411,7 +418,9 @@ impl Repository {
                 modified,
                 deleted: deleted.keys().map(|e| e.clone()).collect::<Vec<String>>(),
             })
-        } else { None }
+        } else {
+            None
+        }
     }
 
     fn get_active_branch(&self) -> Option<String> {
@@ -438,7 +447,7 @@ impl Repository {
                         }
                         Some(GitObject::Blob(..)) => {
                             ret.insert(path, leaf.obj_hash().clone());
-                        },
+                        }
                         _ => {}
                     }
                 }
