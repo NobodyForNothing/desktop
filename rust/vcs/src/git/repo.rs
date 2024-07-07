@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use crate::git::objects::{
     BinSerializable, GitBlob, GitCommit, GitObject, GitObjectType, GitTag, GitTree,
 };
@@ -6,8 +7,10 @@ use log::warn;
 use sha1::{Digest, Sha1};
 use std::fmt::format;
 use std::fs;
+use std::hash::Hash;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+use crate::git::index::GitIndex;
 
 const MAX_REF_RESOLVE_DEPTH: u8 = 100;
 
@@ -376,6 +379,77 @@ impl Repository {
 
         self.ref_create(path.to_str()?.to_string(), tag_ref)
     }
+
+    pub fn status(&self) -> Option<GitStatus> {
+        let index = self.repo_path(vec!["index"], None, Some(true))?;
+        let index = fs::read(index).ok()?;
+        let index = GitIndex::decode(index.as_slice())?;
+        let res = if let ObjectRefResult::Ok(head) = self.object_find("HEAD".to_string()) {
+            if let Some(head) = self.tree_to_map("HEAD".to_string(), String::new()) {
+                let mut added = Vec::new();
+                let mut deleted = head.clone();
+                let mut modified = Vec::new();
+                let mut entries = index.entries();
+                for index_entry in entries {
+                    if head.get(&index_entry.0).is_some() {
+                        if head.get(&index_entry.0).is_some_and(|e| e != &index_entry.1) {
+                            modified.push(index_entry.0.clone());
+                        }
+                        deleted.remove(&index_entry.0);
+                    } else {
+                        added.push(index_entry.0);
+                    }
+                }
+                Some((added, deleted, modified))
+            } else { None }
+        } else { None };
+
+        if let Some((added, deleted, modified)) = res {
+            Some(GitStatus {
+                active_branch: self.get_active_branch().unwrap_or("HEAD".to_string()),
+                added,
+                modified,
+                deleted: deleted.keys().map(|e| e.clone()).collect::<Vec<String>>(),
+            })
+        } else { None }
+    }
+
+    fn get_active_branch(&self) -> Option<String> {
+        let head = self.repo_path(vec!["HEAD"], None, Some(true))?;
+        let head = fs::read_to_string(head).ok()?;
+        let head = head.strip_prefix("ref: refs/heads/")?;
+        Some(head.to_string())
+    }
+
+    /// Creates a map from a tree with the full file path as key and the hash as value.
+    fn tree_to_map(&self, tree_ref: String, prefix: String) -> Option<BTreeMap<String, String>> {
+        let mut ret: BTreeMap<String, String> = BTreeMap::new();
+        if let ObjectRefResult::Ok(tree) = self.object_find(tree_ref) {
+            if let Some(GitObject::Tree(tree)) = self.object_read(tree) {
+                for leaf in tree.entries() {
+                    let path = PathBuf::from(&prefix);
+                    let path = path.join(leaf.path());
+                    let path = path.to_str()?.to_string();
+
+                    match self.object_read(leaf.obj_hash().to_string()) {
+                        Some(GitObject::Tree(..)) => {
+                            let mut res = self.tree_to_map(leaf.obj_hash().clone(), path)?;
+                            ret.append(&mut res);
+                        }
+                        Some(GitObject::Blob(..)) => {
+                            ret.insert(path, leaf.obj_hash().clone());
+                        },
+                        _ => {}
+                    }
+                }
+                Some(ret)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -491,4 +565,15 @@ pub enum ObjectRefResult {
     TooManyResults,
     PointsToDeletedRef,
     NotARef,
+}
+
+pub struct GitStatus {
+    active_branch: String,
+    /// File names of new files.
+    added: Vec<String>,
+    /// File names of modified files.
+    modified: Vec<String>,
+    /// File names of removed files.
+    deleted: Vec<String>,
+    // TODO: changes not staged for commit
 }

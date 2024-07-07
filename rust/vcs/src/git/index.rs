@@ -128,6 +128,14 @@ impl GitIndex {
             None
         }
     }
+
+    /// Get a list of full paths and hashes of index entries. (path, hash)
+    pub fn entries(&self) -> Vec<(String, String)> {
+        self.entries
+            .iter()
+            .map(|e| (e.name.to_str().unwrap().to_string(), e.hash.clone()))
+            .collect()
+    }
 }
 
 impl ObjectType {
