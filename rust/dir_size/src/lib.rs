@@ -1,11 +1,6 @@
 use std::fs;
 use std::path::Path;
 
-#[cfg(target_os = "linux")]
-use std::os::linux::fs::MetadataExt;
-#[cfg(target_os = "windows")]
-use std::os::windows::fs::MetadataExt;
-
 /// Recursively get the size in bytes of a directory.
 ///
 /// Doesn't follow symlinks and only adds the size
@@ -17,13 +12,33 @@ pub fn dir_size<P: AsRef<Path>>(dir: P) -> u128 {
             if file.file_type().unwrap().is_dir() {
                 size += dir_size(file.path());
             } else if let Ok(meta) = file.metadata() {
-                #[cfg(target_os = "linux")]
-                size += meta.st_size() as u128;
-                #[cfg(target_os = "windows")]
-                size += meta.file_size() as u128;
-                
+                size += imp::size(meta);
             }
         }
     }
     size
+}
+
+#[cfg(linux)]
+pub mod imp {
+    use std::os::linux::fs::MetadataExt;
+    pub fn size(f: std::fs::Metadata) -> u128 {
+        f.st_size() as u128
+    }
+}
+
+#[cfg(windows)]
+mod imp {
+    use std::os::windows::fs::MetadataExt;
+    pub fn size(f: std::fs::Metadata) -> u128 {
+        f.file_size() as u128
+    }
+}
+
+#[cfg(unix)]
+pub mod imp {
+    use std::os::unix::fs::MetadataExt;
+    pub fn size(f: std::fs::Metadata) -> u128 {
+        f.size() as u128
+    }
 }
