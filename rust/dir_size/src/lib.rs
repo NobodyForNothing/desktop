@@ -1,6 +1,10 @@
 use std::fs;
-use std::os::linux::fs::MetadataExt;
 use std::path::Path;
+
+#[cfg(target_os = "linux")]
+use std::os::linux::fs::MetadataExt;
+#[cfg(target_os = "windows")]
+use std::os::windows::fs::MetadataExt;
 
 /// Recursively get the size in bytes of a directory.
 ///
@@ -13,7 +17,11 @@ pub fn dir_size<P: AsRef<Path>>(dir: P) -> u128 {
             if file.file_type().unwrap().is_dir() {
                 size += dir_size(file.path());
             } else if let Ok(meta) = file.metadata() {
+                #[cfg(target_os = "linux")]
                 size += meta.st_size() as u128;
+                #[cfg(target_os = "windows")]
+                size += meta.file_size() as u128;
+                
             }
         }
     }
