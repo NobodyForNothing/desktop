@@ -22,3 +22,7 @@ scripts:
     run: flutter pub upgrade
     exec:
       concurrency: 1
+  build:
+    run: bash scripts/build-android.sh
+    description: Build the .tar.gz for Android.
+
