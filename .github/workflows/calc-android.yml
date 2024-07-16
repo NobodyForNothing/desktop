@@ -6,7 +6,11 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
-    strategy:                                                 matrix:                                                   toolchain:                                                - stable                                                - beta
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+          - beta
     steps:                                          
     - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - name: Install dependencies
