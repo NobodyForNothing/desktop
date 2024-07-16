@@ -6,48 +6,29 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
-    steps:
+    strategy:                                                 matrix:                                                   toolchain:                                                - stable                                                - beta
+    steps:                                          
+    - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-               clang \
-               cmake \
-               curl \
-               gcc-multilib \
-               git \
-               g++ \
-               g++-multilib \
-               libappindicator3-dev \
-               libasound2-dev \
-               libc6-dev \
-               libclang-dev \
-               libgtk-3-dev \
-               llvm-dev \
-               nasm \
-               ninja-build \
-               openjdk-11-jdk-headless \
-               pkg-config \
-               wget
       - uses: nttld/setup-ndk@v1
         name: Install NDK
         id: setup-ndk
         with:
           ndk-version: "r26b"
           add-to-path: true
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: 1.75
-          components: "rustfmt"
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: aarch64-linux-android
       - name: Install flutter
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           flutter-version: 3.16.3
+      - name: setup rust ndk builds
+        run: |
+          cargo install cargo-ndk
+          rustup target add \
+               aarch64-linux-android \
+               armv7-linux-androideabi \
+               x86_64-linux-android \
+               i686-linux-android
 
       - uses: actions/checkout@v4
       - name: Build
@@ -57,9 +38,8 @@ jobs:
           ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         working-directory: ./apps/calculator
         run: |
-          rustup target add aarch64-linux-android
           flutter pub get
-          flutter build apk --debug --target-platform android-arm64 --split-per-abi
+          flutter build apk --debug --split-per-abi
 
       - uses: actions/upload-artifact@v4
         with:
