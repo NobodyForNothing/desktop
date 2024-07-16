@@ -20,12 +20,13 @@ jobs:
         name: Install NDK
         id: setup-ndk
         with:
-          ndk-version: "r26b"
+          ndk-version: "r26d"
           add-to-path: true
       - name: Install flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
+          cache: true
           flutter-version: 3.16.3
       - name: setup rust ndk builds
         run: |
@@ -37,6 +38,8 @@ jobs:
                i686-linux-android
 
       - uses: actions/checkout@v4
+      - uses: bluefireteam/melos-action@v3
+      - run: melos bootstrap
       - name: Build
         env:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
