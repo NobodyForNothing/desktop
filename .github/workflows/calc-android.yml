@@ -7,11 +7,11 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
     continue-on-error: true
-    strategy:
-      matrix:
-        toolchain:
-          - stable
     steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install openjdk-11-jdk-headless
       - name: Install rust
         run: |
           rustup update ${{ matrix.toolchain }}
