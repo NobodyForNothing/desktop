@@ -1,34 +1,62 @@
-name: CD
-
+name: Build and release calculator for Android
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    # macOS because we can cross-compile to all other platforms from it
-    runs-on: macos-latest
-
+    name: Build APK
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          cache: true
-      - uses: bluefireteam/melos-action@v2
-      - uses: goto-bus-stop/setup-zig@v2
-      - uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "15"
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install openjdk-11-jdk-headless
+      - name: Install rust
+        run: |
+          rustup update ${{ matrix.toolchain }}
+          rustup default ${{ matrix.toolchain }}
       - uses: nttld/setup-ndk@v1
+        name: Install NDK
+        id: setup-ndk
         with:
-          ndk-version: r26d
+          ndk-version: "r26d"
+          add-to-path: true
+      - name: Install flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+          flutter-version: 3.16.3
+      - name: setup rust ndk builds
+        run: |
+          rustup target add \
+               aarch64-linux-android \
+               armv7-linux-androideabi \
+               x86_64-linux-android \
+               i686-linux-android
+      - uses: taiki-e/cache-cargo-install-action@v2
+        with:
+          tool: flutter_rust_bridge_codegen
+      - uses: taiki-e/cache-cargo-install-action@v2
+        with:
+          tool: cargo-ndk
+      - uses: actions/checkout@v4
+      - uses: bluefireteam/melos-action@v3
+      - run: melos bootstrap
+      - name: generate frb
+        working-directory: ./apps/calculator
+        run: flutter_rust_bridge_codegen generate
+      - name: Build
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
+        working-directory: ./apps/calculator
+        run: |
+          flutter pub get
+          flutter build apk --debug --split-per-abi
 
-      - name: Build all library binaries
-        run: melos run build
       - uses: actions/upload-artifact@v4
         with:
           path: "apps/calculator/build/app/outputs/apk/debug/*.apk"
           compression-level: 2
-
