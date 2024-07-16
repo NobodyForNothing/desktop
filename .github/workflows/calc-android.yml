@@ -1,55 +1,33 @@
-name: Build and release calculator for Android
+name: CD
+
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build APK
-    runs-on: ubuntu-latest
+    # macOS because we can cross-compile to all other platforms from it
+    runs-on: macos-latest
+
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install openjdk-11-jdk-headless
-      - name: Install rust
-        run: |
-          rustup update ${{ matrix.toolchain }}
-          rustup default ${{ matrix.toolchain }}
-      - uses: nttld/setup-ndk@v1
-        name: Install NDK
-        id: setup-ndk
-        with:
-          ndk-version: "r26d"
-          add-to-path: true
-      - name: Install flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-          flutter-version: 3.16.3
-      - name: setup rust ndk builds
-        run: |
-          cargo install cargo-ndk
-          rustup target add \
-               aarch64-linux-android \
-               armv7-linux-androideabi \
-               x86_64-linux-android \
-               i686-linux-android
-
       - uses: actions/checkout@v4
-      - uses: bluefireteam/melos-action@v3
-      - run: melos bootstrap
-      - name: Build
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
-        working-directory: ./apps/calculator
-        run: |
-          flutter pub get
-          flutter build apk --debug --split-per-abi
+      - uses: subosito/flutter-action@v2
+        cache: true
+      - uses: bluefireteam/melos-action@v2
+      - uses: goto-bus-stop/setup-zig@v2
+      - uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "15"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
 
+      - name: Build all library binaries
+        run: melos run build
       - uses: actions/upload-artifact@v4
         with:
           path: "apps/calculator/build/app/outputs/apk/debug/*.apk"
           compression-level: 2
+
