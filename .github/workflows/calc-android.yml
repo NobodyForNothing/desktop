@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
-        cache: true
+        with:
+          cache: true
       - uses: bluefireteam/melos-action@v2
       - uses: goto-bus-stop/setup-zig@v2
       - uses: KyleMayes/install-llvm-action@v1
