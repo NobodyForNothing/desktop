@@ -9,7 +9,7 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkoutv4
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         cache: true
       - uses: bluefireteam/melos-action@v2
