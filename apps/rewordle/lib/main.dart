@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const RewordleApp());
+  runApp(RewordleApp());
 }
 
 class RewordleApp extends StatelessWidget {
@@ -10,8 +10,8 @@ class RewordleApp extends StatelessWidget {
     home: Scaffold(
       body: Column(
         children: [
-	  GuessesList(guesses: []),
-	  Keyboard(),
+          GuessesList(guesses: []),
+          Keyboard(),
         ],
       )
     ),
@@ -19,80 +19,88 @@ class RewordleApp extends StatelessWidget {
 }
 
 class GuessesList extends StatelessWidget {
-const GuessesList({this.guesses});
+  const GuessesList({required this.guesses});
 
   /// list of list containing all made guesses and the current input.
   final List<List<LetterData>> guesses;
 
   @override
-  Widgett build(context) => Padding(
-    padding: EdgeInsets.all(8.0),
+  Widget build(context) => Padding(
+    padding: EdgeInsets.all(12.0),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         for (int i = 0; i < 6; i++)
-	  Guess(letters: guesses[i] ?? []),
+          Guess(letters: guesses.getOrNull(i) ?? []),
       ],
     ),
-  )
+  );
 }
 
 class Guess extends StatelessWidget {
   final List<LetterData> letters;
 
-  const Guess({this.letters});
+  const Guess({required this.letters});
 
   @override
-  Widget build(context) => Row(
+  Widget build(context) => Center(
+    child: Row(
+    mainAxisSize: MainAxisSize.min,
     children: [
       for (int i = 0; i < 5; i++)
-        Letter(letters[i]),
-    ],
+        Letter(letters.getOrNull(i)),
+      ],
+    ),
   );
 }
 
-class Letter {
+class Letter extends StatelessWidget {
   final LetterData? l;
   const Letter(this.l);
+
   @override
   Widget build(context) {
-    final w = 10.0;
-    final h = 17.0;
-    final letter = Center(Text(l?.letter ?? ""));
+    final w = 55.0;
+    final h = 55.0;
+    final letter = Center(child: Text(l?.letter ?? ""));
     final box = switch (l?.state) {
       null => Container(
         width: w,
-	height: h,
-	color: Colors.grey,
+        height: h,
+        color: Colors.grey,
+       
       ),
       LetterCorrectness.ok => Container(
-        width w, height: h,
-	color: Colors.lime,
-	chiöd: letter,
+        width: w, height: h,
+        color: Colors.lime,
+        child: letter,
       ),
       LetterCorrectness.warn => Container(
-        width w, height: h,
+        width: w, height: h,
         color: Colors.orange,
-        chiöd: letter,
+        child: letter,
       ),
       LetterCorrectness.err =>Container(
-        width w, height: h,
+        width: w, height: h,
         color: Colors.red,
-        chiöd: letter,
+        child: letter,
       ),
     };
 
     return Padding(
-      padding: EdgeInsets.all(2.0),
+      padding: EdgeInsets.all(4.0),
       child: box,
     );
   }
+}
 
 class LetterData {
   final LetterCorrectness state;
   final String letter;
 
-  const LetterData(this.state, this.letter): assert("QWERTZUIOPASDFGHJKLMNBVCXY".contains(letter));
+  const LetterData(this.state, this.letter);
+
+
 }
 
 enum LetterCorrectness {
@@ -108,3 +116,8 @@ class Keyboard extends StatelessWidget {
   Widget build(c) => SizedBox();// todo
 }
 
+extension ListExtension<T> on List<T> {
+  T? getOrNull(int index) {
+    return (index >= 0 && index < length) ? this[index] : null;
+  }
+}
