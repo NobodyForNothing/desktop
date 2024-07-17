@@ -11,7 +11,11 @@ class RewordleApp extends StatelessWidget {
       body: Column(
         children: [
           GuessesList(guesses: []),
-          Keyboard(),
+          Keyboard(
+            onLetter: (l) => null,
+            onDone: (){},
+            onBack: (){},
+          ),
         ],
       )
     ),
@@ -68,7 +72,7 @@ class Letter extends StatelessWidget {
         width: w,
         height: h,
         color: Colors.grey,
-       
+
       ),
       LetterCorrectness.ok => Container(
         width: w, height: h,
@@ -113,7 +117,66 @@ enum LetterCorrectness {
 }
 
 class Keyboard extends StatelessWidget {
-  Widget build(c) => SizedBox();// todo
+  const Keyboard({required this.onLetter, required this.onDone, required this.onBack});
+
+  final void Function(String) onLetter;
+  final void Function() onDone;
+  final void Function() onBack;
+
+  // todo: coloring
+  Widget _letterBtn(String letter) => InkWell(
+    onTap: () => onLetter(letter),
+    child: Container(
+      width: 30.0,
+      height: 45.0,
+      child: Center(child: Text(letter)),
+    ),
+  );
+
+  @override
+  Widget build(c) => Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final l in "QWERTYUIOP".split(""))
+            _letterBtn(l),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final l in "ASDFGHJKL".split(""))
+            _letterBtn(l),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: onDone,
+            child: Container(
+              width: 60.0,
+              height: 45.0,
+              child: Center(child: Text("ENTER")),
+            ),
+          ),
+          for (final l in "ZXCVBNM".split(""))
+            _letterBtn(l),
+          InkWell(
+            onTap: onBack,
+            child: Container(
+              width: 50.0,
+              height: 45.0,
+              child: Center(child: Icon(Icons.backspace))),
+            ),
+        
+
+        ],
+      ),
+    ],
+  );// todo
 }
 
 extension ListExtension<T> on List<T> {
@@ -121,3 +184,5 @@ extension ListExtension<T> on List<T> {
     return (index >= 0 && index < length) ? this[index] : null;
   }
 }
+
+
