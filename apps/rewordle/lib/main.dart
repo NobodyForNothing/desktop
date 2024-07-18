@@ -4,17 +4,62 @@ void main() {
   runApp(RewordleApp());
 }
 
-class RewordleApp extends StatelessWidget {
+class RewordleApp extends StatefulWidget {
+  @override
+  State<RewordleApp> createState() => _RewordleAppState();
+}
+
+class _RewordleAppState extends State<RewordleApp> {
+  final List<LetterData> current = [];
+  final List<List<LetterData>> submitted = [];
+  final word = "ABOUT";
+
   @override
   Widget build(context) => MaterialApp(
     home: Scaffold(
       body: Column(
         children: [
-          GuessesList(guesses: []),
+          GuessesList(guesses: [
+            for (final e in submitted)
+	      e,
+	    current,
+	  ]),
           Keyboard(
-            onLetter: (l) => null,
-            onDone: (){},
-            onBack: (){},
+            onLetter: (l) {
+	      if (current.length <= 5) {
+	        setState(() => current.add(LetterData(LetterCorrectness.none, l)));
+	      }
+	    },
+            onDone: () {
+              if (current.length != 5) {
+	        ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Wrong length'),
+	   	  ),
+	        );
+		// TODO: word list check
+              }
+	
+    	      final checked = <LetterData>[];
+	      for (int i = 0; i < 5; i++) {
+                final l = current[i].letter;
+                if (word[i] == l) {
+		  checked.add(LetterData(LetterCorrectness.ok, l));
+		} else if (word.contains(l)) {
+		  checked.add(LetterData(LetterCorrectness.warn, l));
+		} else {
+		  checked.add(LetterData(LetterCorrectness.err, l));
+		}
+              }
+
+              setState(() {
+                submitted.add(checked);
+		current.clear();
+	      });
+	    },
+            onBack: () {
+              if (current.length > 0) setState(() => current.removeLast());
+	    },
           ),
         ],
       )
@@ -68,12 +113,6 @@ class Letter extends StatelessWidget {
     final h = 55.0;
     final letter = Center(child: Text(l?.letter ?? ""));
     final box = switch (l?.state) {
-      null => Container(
-        width: w,
-        height: h,
-        color: Colors.grey,
-
-      ),
       LetterCorrectness.ok => Container(
         width: w, height: h,
         color: Colors.lime,
@@ -86,7 +125,15 @@ class Letter extends StatelessWidget {
       ),
       LetterCorrectness.err =>Container(
         width: w, height: h,
-        color: Colors.red,
+        color: Colors.grey,
+        child: letter,
+      ),
+      null || LetterCorrectness.none => Container(
+        width: w - 4.0,
+	height : h - 4.0,
+	decoration: BoxDecoration(
+	  border: Border.all(width: 2.0, color: Colors.grey),
+        ),
         child: letter,
       ),
     };
@@ -114,6 +161,8 @@ enum LetterCorrectness {
   warn,
   /// Not in word.
   err,
+  /// Unknown state, not yet submitted.
+  none,
 }
 
 class Keyboard extends StatelessWidget {
