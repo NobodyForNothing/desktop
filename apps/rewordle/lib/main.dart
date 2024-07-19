@@ -8,7 +8,7 @@ class Defaults {
   static final Color background = Colors.black;
   static final Color textColor = Colors.white;
   static final Color buttonBg = Colors.grey;
-  static final double textSize = 15.0;
+  static final double textSize = 24.0;
   static final Color correctPos = Color(0xFF669F5E);
   static final Color wrongPos = Color(0xFFC8B557);
   static final Color notInWord = Color(0xFF919293);
@@ -23,6 +23,10 @@ class _RewordleAppState extends State<RewordleApp> {
   final List<LetterData> current = [];
   final List<List<LetterData>> submitted = [];
   final word = "ABOUT";
+
+  String wrongLetters = "";
+  String wrongPosLetters = "";
+  String okLetters = "";
 
   @override
   Widget build(context) => MaterialApp(
@@ -44,6 +48,9 @@ class _RewordleAppState extends State<RewordleApp> {
 	    current,
 	  ]),
           Keyboard(
+	    okLetters: okLetters,
+	    wrongPosLetters: wrongPosLetters,
+	    wrongLetters: wrongLetters,
             onLetter: (l) {
 	      if (current.length <= 5) {
 	        setState(() => current.add(LetterData(LetterCorrectness.none, l)));
@@ -63,10 +70,13 @@ class _RewordleAppState extends State<RewordleApp> {
 	      for (int i = 0; i < 5; i++) {
                 final l = current[i].letter;
                 if (word[i] == l) {
+		  setState(()=>okLetters += l);
 		  checked.add(LetterData(LetterCorrectness.ok, l));
 		} else if (word.contains(l)) {
+		  setState(()=>wrongPosLetters += l);
 		  checked.add(LetterData(LetterCorrectness.warn, l));
 		} else {
+		  setState(()=>wrongLetters += l);
 		  checked.add(LetterData(LetterCorrectness.err, l));
 		}
               }
@@ -131,7 +141,8 @@ class Letter extends StatelessWidget {
   Widget build(context) {
     final w = 57.0;
     final h = 57.0;
-    final letter = Center(child: Text(l?.letter ?? ""));
+    final letter = Center(child: Text(l?.letter ?? "",
+      style: TextStyle(fontSize: Defaults.textSize)));
     final box = switch (l?.state) {
       LetterCorrectness.ok => Container(
         width: w, height: h,
@@ -186,11 +197,22 @@ enum LetterCorrectness {
 }
 
 class Keyboard extends StatelessWidget {
-  const Keyboard({required this.onLetter, required this.onDone, required this.onBack});
+  const Keyboard({
+    required this.onLetter,
+    required this.onDone,
+    required this.onBack,
+    required this.okLetters,
+    required this.wrongPosLetters,
+    required this.wrongLetters,
+  });
 
   final void Function(String) onLetter;
   final void Function() onDone;
   final void Function() onBack;
+
+  final String okLetters;
+  final String wrongPosLetters;
+  final String wrongLetters;
 
   // todo: coloring
   Widget _letterBtn(String letter) => InkWell(
@@ -199,12 +221,27 @@ class Keyboard extends StatelessWidget {
       width: 36.0,
       height: 54.8,
       decoration: BoxDecoration(
-        color: Colors.grey,
+        color: (){
+         if (okLetters.contains(letter)) {
+	   return Defaults.correctPos;
+	 } else if (wrongPosLetters.contains(letter)) {
+	   return Defaults.wrongPos;
+	 } else if (wrongLetters.contains(letter)) {
+	   return Color(0xff2c3033);
+	 }
+	 return Color(0xff5e6669);
+	}(),
 	borderRadius: BorderRadius.all(Radius.circular(5.0)),
       ),
       margin: EdgeInsets.all(1.5),
-      child: Center(child: Text(letter)),
-    ),
+      child: Center(
+        child: Text(letter, style: TextStyle(
+	  color: Defaults.textColor,
+          fontSize: Defaults.textSize,
+	  fontWeight: FontWeight.bold,
+	  ))
+	),
+     )
   );
 
   @override
