@@ -4,6 +4,16 @@ void main() {
   runApp(RewordleApp());
 }
 
+class Defaults {
+  static final Color background = Colors.black;
+  static final Color textColor = Colors.white;
+  static final Color buttonBg = Colors.grey;
+  static final double textSize = 15.0;
+  static final Color correctPos = Color(0xFF669F5E);
+  static final Color wrongPos = Color(0xFFC8B557);
+  static final Color notInWord = Color(0xFF919293);
+}
+
 class RewordleApp extends StatefulWidget {
   @override
   State<RewordleApp> createState() => _RewordleAppState();
@@ -16,7 +26,16 @@ class _RewordleAppState extends State<RewordleApp> {
 
   @override
   Widget build(context) => MaterialApp(
-    home: Scaffold(
+    theme: ThemeData(
+      backgroundColor: Defaults.background,
+      canvasColor: Defaults.background,
+    ),	
+    home: DefaultTextStyle(
+     style: TextStyle(
+       fontSize: Defaults.textSize,
+       fontWeight: FontWeight.bold,
+     ),
+     child: Scaffold(
       body: Column(
         children: [
           GuessesList(guesses: [
@@ -63,6 +82,7 @@ class _RewordleAppState extends State<RewordleApp> {
           ),
         ],
       )
+     )
     ),
   );
 }
@@ -109,30 +129,30 @@ class Letter extends StatelessWidget {
 
   @override
   Widget build(context) {
-    final w = 55.0;
-    final h = 55.0;
+    final w = 57.0;
+    final h = 57.0;
     final letter = Center(child: Text(l?.letter ?? ""));
     final box = switch (l?.state) {
       LetterCorrectness.ok => Container(
         width: w, height: h,
-        color: Colors.lime,
+        color: Defaults.correctPos,
         child: letter,
       ),
       LetterCorrectness.warn => Container(
         width: w, height: h,
-        color: Colors.orange,
+        color: Defaults.wrongPos,
         child: letter,
       ),
       LetterCorrectness.err =>Container(
         width: w, height: h,
-        color: Colors.grey,
+        color: Defaults.notInWord,
         child: letter,
       ),
       null || LetterCorrectness.none => Container(
-        width: w - 4.0,
-	height : h - 4.0,
+        width: w,
+	height : h,
 	decoration: BoxDecoration(
-	  border: Border.all(width: 2.0, color: Colors.grey),
+	  border: Border.all(width: 2.0, color: Defaults.notInWord),
         ),
         child: letter,
       ),
@@ -176,8 +196,13 @@ class Keyboard extends StatelessWidget {
   Widget _letterBtn(String letter) => InkWell(
     onTap: () => onLetter(letter),
     child: Container(
-      width: 30.0,
-      height: 45.0,
+      width: 36.0,
+      height: 54.8,
+      decoration: BoxDecoration(
+        color: Colors.grey,
+	borderRadius: BorderRadius.all(Radius.circular(5.0)),
+      ),
+      margin: EdgeInsets.all(1.5),
       child: Center(child: Text(letter)),
     ),
   );
