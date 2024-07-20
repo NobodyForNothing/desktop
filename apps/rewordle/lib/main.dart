@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'persistence.dart';
 
 void main() {
   runApp(RewordleApp());
@@ -7,7 +8,6 @@ void main() {
 class Defaults {
   static final Color background = Colors.black;
   static final Color textColor = Colors.white;
-  static final Color buttonBg = Colors.grey;
   static final double textSize = 24.0;
   static final Color correctPos = Color(0xFF669F5E);
   static final Color wrongPos = Color(0xFFC8B557);
@@ -40,6 +40,7 @@ class _RewordleAppState extends State<RewordleApp> {
        fontWeight: FontWeight.bold,
      ),
      child: Scaffold(
+      backgroundColor: Defaults.background,
       body: Column(
         children: [
           GuessesList(guesses: [
@@ -52,7 +53,7 @@ class _RewordleAppState extends State<RewordleApp> {
 	    wrongPosLetters: wrongPosLetters,
 	    wrongLetters: wrongLetters,
             onLetter: (l) {
-	      if (current.length <= 5) {
+	      if (current.length < 5) {
 	        setState(() => current.add(LetterData(LetterCorrectness.none, l)));
 	      }
 	    },
@@ -142,7 +143,12 @@ class Letter extends StatelessWidget {
     final w = 57.0;
     final h = 57.0;
     final letter = Center(child: Text(l?.letter ?? "",
-      style: TextStyle(fontSize: Defaults.textSize)));
+       style: TextStyle(
+         fontSize: Defaults.textSize,
+         fontWeight: FontWeight.bold,
+	 color: Defaults.textColor,
+       ),
+    ));
     final box = switch (l?.state) {
       LetterCorrectness.ok => Container(
         width: w, height: h,
@@ -174,26 +180,6 @@ class Letter extends StatelessWidget {
       child: box,
     );
   }
-}
-
-class LetterData {
-  final LetterCorrectness state;
-  final String letter;
-
-  const LetterData(this.state, this.letter);
-
-
-}
-
-enum LetterCorrectness {
-  /// At correct position.
-  ok,
-  /// At wong position.
-  warn,
-  /// Not in word.
-  err,
-  /// Unknown state, not yet submitted.
-  none,
 }
 
 class Keyboard extends StatelessWidget {
@@ -270,7 +256,7 @@ class Keyboard extends StatelessWidget {
             child: Container(
               width: 60.0,
               height: 45.0,
-              child: Center(child: Text("ENTER")),
+              child: Center(child: Text("ENTER", style: TextStyle(color: Defaults.textColor))),
             ),
           ),
           for (final l in "ZXCVBNM".split(""))
@@ -280,7 +266,7 @@ class Keyboard extends StatelessWidget {
             child: Container(
               width: 50.0,
               height: 45.0,
-              child: Center(child: Icon(Icons.backspace))),
+              child: Center(child: Icon(Icons.backspace, color: Defaults.textColor))),
             ),
         
 
