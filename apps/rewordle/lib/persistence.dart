@@ -12,6 +12,11 @@ class DayLoader {
       return GameState(word);
     }
   }
+
+  static Future<void> save(String day, GameState data, [SharedPreferences? prefs]) async {
+    prefs ??= await SharedPreferences.getInstance();
+    await prefs.setString(day, data.serialize());
+  }
 }
 
 class GameState {
@@ -27,21 +32,7 @@ class GameState {
 
     final words = e[4].split(',');
     final correct = e[0].split('');
-    for (final w in words) {
-      final wSub = <LetterData>[];
-      final letters = w.split('');
-      for (int i = 0; i < 5; i++) {
-        if (correct[i] == letters[i]) {
-          wSub.add(LetterData(LetterCorrectness.ok, letters[i]));
-	} else if (e[0].contains(letters[i])) {
-          wSub.add(LetterData(LetterCorrectness.warn, letters[i]));
-	} else {
-	  wSub.add(LetterData(LetterCorrectness.err, letters[i]));
-	}
-      }
-      state.submitted.add(wSub);
-    }
-    // todo: stop duplicating this algorithm
+    words.forEach(state.addWord);
     return state;
   }
 
@@ -52,6 +43,46 @@ class GameState {
   String wrongLetters = "";
   String wrongPosLetters = "";
   String okLetters = "";
+
+  String serialize() {
+    String submissionsString = "";
+    for (final wData in submitted) {
+      String w = "";
+      for (final l in wData) {
+        w += l.letter;
+      }
+      submissionsString += '$w,';
+    }
+    if (submitted.isNotEmpty) { // remove trailing ,
+      submissionsString = submissionsString.substring(0,submissionsString.length - 1);
+    }
+    return '$correctWord|$wrongLetters|$wrongPosLetters|$okLetters|$submissionsString';
+  }
+
+  String? addWord(String word) {
+    final letters = word.split('');
+    if (letters.length != 5) return 'Not 5 letters long';
+    // TODO: word list check
+
+    final checked = <LetterData>[];
+    for (int i = 0; i < 5; i++) {
+      final l = letters[i];
+      if (correctWord[i] == l) {
+        okLetters += l;
+        checked.add(LetterData(LetterCorrectness.ok, l));
+      } else if (correctWord.contains(l)) {
+        wrongPosLetters += l;
+	checked.add(LetterData(LetterCorrectness.warn, l));
+      } else {
+        wrongLetters += l;
+	checked.add(LetterData(LetterCorrectness.err, l));
+      }
+    }
+
+    submitted.add(checked);
+
+    return null;
+  }
 }
 
 class LetterData {

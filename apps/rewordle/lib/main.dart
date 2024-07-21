@@ -20,20 +20,27 @@ class RewordleApp extends StatefulWidget {
 }
 
 class _RewordleAppState extends State<RewordleApp> {
-  final List<LetterData> current = [];
-  final List<List<LetterData>> submitted = [];
-  final word = "ABOUT";
+  GameState? state;
+  String err = '';
 
-  String wrongLetters = "";
-  String wrongPosLetters = "";
-  String okLetters = "";
+  @override
+  void initState() {
+    super.initState();
+    DayLoader.load('2024-04-13').then((s) => setState((){state = s;})); 
+  }
+
+  @override
+  void dispose() {
+    if (state != null) DayLoader.save('2024-04-13', state!);
+    super.dispose();
+  }
 
   @override
   Widget build(context) => MaterialApp(
     theme: ThemeData(
       backgroundColor: Defaults.background,
       canvasColor: Defaults.background,
-    ),	
+    ),
     home: DefaultTextStyle(
      style: TextStyle(
        fontSize: Defaults.textSize,
@@ -41,56 +48,53 @@ class _RewordleAppState extends State<RewordleApp> {
      ),
      child: Scaffold(
       backgroundColor: Defaults.background,
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        leading: state == null ? CircularProgressIndicator() : null,
+      ),
       body: Column(
         children: [
           GuessesList(guesses: [
-            for (final e in submitted)
+            for (final e in state?.submitted ?? [])
 	      e,
-	    current,
+	    state?.current ?? [], // todo cache letters until loaded
 	  ]),
           Keyboard(
-	    okLetters: okLetters,
-	    wrongPosLetters: wrongPosLetters,
-	    wrongLetters: wrongLetters,
+	    okLetters: state?.okLetters ?? '',
+	    wrongPosLetters: state?.wrongPosLetters ?? '',
+	    wrongLetters: state?.wrongLetters ?? '',
             onLetter: (l) {
-	      if (current.length < 5) {
-	        setState(() => current.add(LetterData(LetterCorrectness.none, l)));
+	      if ((state?.current.length ?? 6) < 5) {
+	        setState(() => state!.current.add(LetterData(LetterCorrectness.none, l)));
 	      }
 	    },
             onDone: () {
-              if (current.length != 5) {
-	        ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Wrong length'),
-	   	  ),
-	        );
-		// TODO: word list check
-              }
-	
-    	      final checked = <LetterData>[];
-	      for (int i = 0; i < 5; i++) {
-                final l = current[i].letter;
-                if (word[i] == l) {
-		  setState(()=>okLetters += l);
-		  checked.add(LetterData(LetterCorrectness.ok, l));
-		} else if (word.contains(l)) {
-		  setState(()=>wrongPosLetters += l);
-		  checked.add(LetterData(LetterCorrectness.warn, l));
-		} else {
-		  setState(()=>wrongLetters += l);
-		  checked.add(LetterData(LetterCorrectness.err, l));
+	      String word = '';
+	      for (final e in state?.current ?? []) {
+	        word += e.letter;
+	      }
+	      setState(() {
+	        try {
+	        String? resp = state?.addWord(word);
+		if (state == null) {
+		  resp = 'Loading, please wait';
 		}
-              }
-
-              setState(() {
-                submitted.add(checked);
-		current.clear();
-	      });
+                if (resp != null) {
+	          err = resp;
+                } else {
+                  state?.current.clear();
+		}
+		} catch (e, s) {
+		  err = word + e.toString() + s.toString();
+		}
+              });
+	      if (state != null) DayLoader.save('2024-04-13', state!);
 	    },
             onBack: () {
-              if (current.length > 0) setState(() => current.removeLast());
+              if ((state?.current.length ?? 0) > 0) setState(() => state?.current.removeLast());
 	    },
           ),
+	  SingleChildScrollView(child: Text(err, style: TextStyle(color: Colors.white))),
         ],
       )
      )
