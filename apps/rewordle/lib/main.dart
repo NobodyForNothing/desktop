@@ -82,6 +82,7 @@ class _RewordleAppState extends State<RewordleApp> {
                 if (resp != null) {
 	          err = resp;
                 } else {
+		  err = '';
                   state?.current.clear();
 		}
 		} catch (e, s) {
