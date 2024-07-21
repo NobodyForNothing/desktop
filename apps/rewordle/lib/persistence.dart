@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'valid_words.dart';
 
 class DayLoader {
   static Future<GameState> load(String day, [SharedPreferences? prefs]) async {
@@ -62,6 +63,7 @@ class GameState {
   String? addWord(String word) {
     final letters = word.split('');
     if (letters.length != 5) return 'Not 5 letters long';
+    if (!VALID_WORDS.contains(word)) return 'Not in word list';
     // TODO: word list check
 
     final checked = <LetterData>[];
