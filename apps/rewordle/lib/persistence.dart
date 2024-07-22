@@ -1,4 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'valid_words.dart';
 
 class DayLoader {
@@ -9,7 +11,10 @@ class DayLoader {
     if (data != null) {
       return GameState.deserialize(data);
     } else {
-      final word = "TODOS";
+      final response = await http.get(Uri.parse('https://www.nytimes.com/svc/wordle/v2/2022-08-14.json'));
+      if (response.statusCode != 200) return load(day, prefs);
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final word = data['solution'].toUpperCase();
       return GameState(word);
     }
   }

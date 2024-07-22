@@ -50,7 +50,13 @@ class _RewordleAppState extends State<RewordleApp> {
       backgroundColor: Defaults.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
-        leading: state == null ? CircularProgressIndicator() : null,
+        leading: state != null ? null : Padding(
+	  padding: EdgeInsets.all(3.0),
+	  child: Stack(children: [
+	    Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Defaults.textColor), strokeWidth: 1,)),
+	    Center(child: Icon(Icons.cloud, color: Defaults.textColor)),
+	  ]),
+	),
       ),
       body: Column(
         children: [
