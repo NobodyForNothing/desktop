@@ -50,6 +50,8 @@ class GameState {
   String wrongPosLetters = "";
   String okLetters = "";
 
+  bool finished = false;
+
   String serialize() {
     String submissionsString = "";
     for (final wData in submitted) {
@@ -88,6 +90,12 @@ class GameState {
 
     submitted.add(checked);
 
+    finished = (){
+      for(final l in checked) {
+        if (l.state != LetterCorrectness.ok) return false;
+      }
+      return true;
+    }();
     return null;
   }
 }

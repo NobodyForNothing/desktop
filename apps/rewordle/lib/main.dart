@@ -65,42 +65,43 @@ class _RewordleAppState extends State<RewordleApp> {
 	      e,
 	    state?.current ?? [], // todo cache letters until loaded
 	  ]),
-          Keyboard(
-	    okLetters: state?.okLetters ?? '',
-	    wrongPosLetters: state?.wrongPosLetters ?? '',
-	    wrongLetters: state?.wrongLetters ?? '',
-            onLetter: (l) {
-	      if ((state?.current.length ?? 6) < 5) {
-	        setState(() => state!.current.add(LetterData(LetterCorrectness.none, l)));
-	      }
-	    },
-            onDone: () {
-	      String word = '';
-	      for (final e in state?.current ?? []) {
-	        word += e.letter;
-	      }
-	      setState(() {
-	        try {
-	        String? resp = state?.addWord(word);
-		if (state == null) {
-		  resp = 'Loading, please wait';
-		}
-                if (resp != null) {
-	          err = resp;
-                } else {
-		  err = '';
-                  state?.current.clear();
-		}
-		} catch (e, s) {
-		  err = word + e.toString() + s.toString();
-		}
-              });
-	      if (state != null) DayLoader.save('2024-04-13', state!);
-	    },
-            onBack: () {
-              if ((state?.current.length ?? 0) > 0) setState(() => state?.current.removeLast());
-	    },
-          ),
+	  if (!(state?.finished ?? false))
+            Keyboard(
+	      okLetters: state?.okLetters ?? '',
+  	      wrongPosLetters: state?.wrongPosLetters ?? '',
+	      wrongLetters: state?.wrongLetters ?? '',
+              onLetter: (l) {
+	        if ((state?.current.length ?? 6) < 5) {
+	          setState(() => state!.current.add(LetterData(LetterCorrectness.none, l)));
+	        }
+	      },
+              onDone: () {
+	        String word = '';
+	        for (final e in state?.current ?? []) {
+	          word += e.letter;
+	        }
+	        setState(() {
+	          try {
+	            String? resp = state?.addWord(word);
+	            if (state == null) {
+		      resp = 'Loading, please wait';
+	            }
+                    if (resp != null) {
+	              err = resp;
+                    } else {
+		      err = '';
+                      state?.current.clear();
+		    }
+		  } catch (e, s) {
+		    err = word + e.toString() + s.toString();
+		  }
+                });
+	        if (state != null) DayLoader.save('2024-04-13', state!);
+	      },
+              onBack: () {
+                if ((state?.current.length ?? 0) > 0) setState(() => state?.current.removeLast());
+	      },
+            ),
 	  SingleChildScrollView(child: Text(err, style: TextStyle(color: Colors.white))),
         ],
       )
