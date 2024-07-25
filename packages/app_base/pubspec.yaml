@@ -1,6 +1,6 @@
 name: app_base
 description: "Components and styles at the base of a derdilla-app"
-version: 0.0.2+2
+version: 0.0.3
 homepage:
 
 environment:

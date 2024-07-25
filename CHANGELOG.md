@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2024-07-25
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`app_base` - `v0.0.3`](#app_base---v003)
+ - [`assets` - `v1.1.0`](#assets---v110)
+ - [`file_entry` - `v0.0.3`](#file_entry---v003)
+ - [`file_preview` - `v0.0.3`](#file_preview---v003)
+
+---
+
+#### `app_base` - `v0.0.3`
+
+ - **FIX**: derdilla theme.
+ - **FEAT**: mock up basic file manager.
+ - **FEAT**: extract app base.
+
+#### `assets` - `v1.1.0`
+
+ - **FIX**: assets icon scaling.
+ - **FEAT**: implement basic directory navigation.
+
+#### `file_entry` - `v0.0.3`
+
+ - **FEAT**: implement basic file info.
+ - **FEAT**: implement keyboard focus.
+
+#### `file_preview` - `v0.0.3`
+
+ - **FEAT**: mock up basic file manager.
+
+
 ## 2024-04-28
 
 ### Changes

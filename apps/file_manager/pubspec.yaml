@@ -10,8 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  file_entry: ^0.0.2
-  app_base: ^0.0.2+2
+  file_entry: ^0.0.3
+  app_base: ^0.0.3
   path: ^1.9.0
 
 dev_dependencies:

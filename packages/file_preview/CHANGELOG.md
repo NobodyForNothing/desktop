@@ -1,3 +1,7 @@
+## 0.0.3
+
+ - **FEAT**: mock up basic file manager.
+
 ## 0.0.2+1
 
  - Update a dependency to the latest release.

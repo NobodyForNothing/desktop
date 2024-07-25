@@ -1,3 +1,8 @@
+## 0.0.3
+
+ - **FEAT**: implement basic file info.
+ - **FEAT**: implement keyboard focus.
+
 ## 0.0.2+1
 
  - **FIX**: accessing assets.

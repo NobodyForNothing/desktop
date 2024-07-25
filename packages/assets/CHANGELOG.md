@@ -1,3 +1,8 @@
+## 1.1.0
+
+ - **FIX**: assets icon scaling.
+ - **FEAT**: implement basic directory navigation.
+
 ## 1.0.1
 
  - **FIX**: accessing assets.
