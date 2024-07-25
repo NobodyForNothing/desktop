@@ -2,7 +2,7 @@ name: calculator
 description: "Simple and usable calculator"
 publish_to: 'none'
 
-version: 1.1.0
+version: 1.1.1
 
 environment:
   sdk: '>=3.2.0 <4.0.0'

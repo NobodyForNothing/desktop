@@ -1,3 +1,7 @@
+## 1.1.1
+
+ - **FIX**: derdilla theme.
+
 ## 1.1.0
 
  - **REFACTOR**: calculator logic.

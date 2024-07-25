@@ -15,6 +15,52 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`calculator` - `v1.1.1`](#calculator---v111)
+ - [`file_manager` - `v0.0.2`](#file_manager---v002)
+ - [`rewordle` - `v0.1.1`](#rewordle---v011)
+
+---
+
+#### `calculator` - `v1.1.1`
+
+ - **FIX**: derdilla theme.
+
+#### `file_manager` - `v0.0.2`
+
+ - **FEAT**: implement keyboard focus.
+ - **FEAT**: implement basic directory navigation.
+ - **FEAT**: mock up basic file manager.
+ - **FEAT**: extract app base.
+
+#### `rewordle` - `v0.1.1`
+
+ - **FIX**: make rewordle error message disappear once correct word is entered.
+ - **FEAT**: fetch todays wordle.
+ - **FEAT**: hide rewordle keyboard once finished.
+ - **FEAT**: get amswers from original wordle.
+ - **FEAT**: validate submissions with word list.
+ - **FEAT**: implement persistence.
+ - **FEAT**: extract rewordle data for persistence.
+ - **FEAT**: colorize rewordle keyboard keys.
+ - **FEAT**: improve looks.
+ - **FEAT**: implemen word submission logic.
+ - **FEAT**: add rewordle keyboard.
+ - **FEAT**: rewordle guess display.
+ - **FEAT**: reimplement wordle ui.
+
+
+## 2024-07-25
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`app_base` - `v0.0.3`](#app_base---v003)
  - [`assets` - `v1.1.0`](#assets---v110)
  - [`file_entry` - `v0.0.3`](#file_entry---v003)
