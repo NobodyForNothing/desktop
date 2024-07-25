@@ -11,7 +11,8 @@ class DayLoader {
     if (data != null) {
       return GameState.deserialize(data);
     } else {
-      final response = await http.get(Uri.parse('https://www.nytimes.com/svc/wordle/v2/2022-08-14.json'));
+      //final response = await http.get(Uri.parse('https://www.nytimes.com/svc/wordle/v2/2022-08-14.json'));
+      final response = await http.get(Uri.parse('https://corsproxy.io/?https%3A%2F%2Fwww.nytimes.com%2Fsvc%2Fwordle%2Fv2%2F$day.json'));
       if (response.statusCode != 200) return load(day, prefs);
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       final word = data['solution'].toUpperCase();

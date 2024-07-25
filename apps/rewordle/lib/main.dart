@@ -22,16 +22,20 @@ class RewordleApp extends StatefulWidget {
 class _RewordleAppState extends State<RewordleApp> {
   GameState? state;
   String err = '';
+  late DateTime today;
 
   @override
   void initState() {
     super.initState();
-    DayLoader.load('2024-04-13').then((s) => setState((){state = s;})); 
+    today = new DateTime.now();
+    String dateSlug ="${today.year.toString()}-${today.month.toString().padLeft(2,'0')}-${today.day.toString().padLeft(2,'0')}";
+    DayLoader.load(dateSlug).then((s) => setState((){state = s;})); 
   }
 
   @override
   void dispose() {
-    if (state != null) DayLoader.save('2024-04-13', state!);
+    String dateSlug ="${today.year.toString()}-${today.month.toString().padLeft(2,'0')}-${today.day.toString().padLeft(2,'0')}";
+    if (state != null) DayLoader.save(dateSlug, state!);
     super.dispose();
   }
 
@@ -96,7 +100,10 @@ class _RewordleAppState extends State<RewordleApp> {
 		    err = word + e.toString() + s.toString();
 		  }
                 });
-	        if (state != null) DayLoader.save('2024-04-13', state!);
+	        if (state != null) {
+		  String dateSlug ="${today.year.toString()}-${today.month.toString().padLeft(2,'0')}-${today.day.toString().padLeft(2,'0')}";
+		  DayLoader.save(dateSlug, state!);
+		}
 	      },
               onBack: () {
                 if ((state?.current.length ?? 0) > 0) setState(() => state?.current.removeLast());
