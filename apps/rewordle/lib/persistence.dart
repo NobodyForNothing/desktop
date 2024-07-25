@@ -12,7 +12,8 @@ class DayLoader {
       return GameState.deserialize(data);
     } else {
       //final response = await http.get(Uri.parse('https://www.nytimes.com/svc/wordle/v2/2022-08-14.json'));
-      final response = await http.get(Uri.parse('https://corsproxy.io/?https%3A%2F%2Fwww.nytimes.com%2Fsvc%2Fwordle%2Fv2%2F$day.json'));
+      final response = await http.get(Uri.parse(
+          'https://corsproxy.io/?https%3A%2F%2Fwww.nytimes.com%2Fsvc%2Fwordle%2Fv2%2F$day.json'));
       if (response.statusCode != 200) return load(day, prefs);
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       final word = data['solution'].toUpperCase();
@@ -20,7 +21,8 @@ class DayLoader {
     }
   }
 
-  static Future<void> save(String day, GameState data, [SharedPreferences? prefs]) async {
+  static Future<void> save(String day, GameState data,
+      [SharedPreferences? prefs]) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setString(day, data.serialize());
   }
@@ -31,7 +33,7 @@ class GameState {
 
   factory GameState.deserialize(String data) {
     final e = data.split("|");
-    
+
     final state = GameState(e[0]);
     state.wrongLetters = e[1];
     state.wrongPosLetters = e[2];
@@ -62,8 +64,10 @@ class GameState {
       }
       submissionsString += '$w,';
     }
-    if (submitted.isNotEmpty) { // remove trailing ,
-      submissionsString = submissionsString.substring(0,submissionsString.length - 1);
+    if (submitted.isNotEmpty) {
+      // remove trailing ,
+      submissionsString =
+          submissionsString.substring(0, submissionsString.length - 1);
     }
     return '$correctWord|$wrongLetters|$wrongPosLetters|$okLetters|$submissionsString';
   }
@@ -82,17 +86,17 @@ class GameState {
         checked.add(LetterData(LetterCorrectness.ok, l));
       } else if (correctWord.contains(l)) {
         wrongPosLetters += l;
-	checked.add(LetterData(LetterCorrectness.warn, l));
+        checked.add(LetterData(LetterCorrectness.warn, l));
       } else {
         wrongLetters += l;
-	checked.add(LetterData(LetterCorrectness.err, l));
+        checked.add(LetterData(LetterCorrectness.err, l));
       }
     }
 
     submitted.add(checked);
 
-    finished = (){
-      for(final l in checked) {
+    finished = () {
+      for (final l in checked) {
         if (l.state != LetterCorrectness.ok) return false;
       }
       return true;
@@ -111,13 +115,13 @@ class LetterData {
 enum LetterCorrectness {
   /// At correct position.
   ok,
+
   /// At wong position.
   warn,
+
   /// Not in word.
   err,
+
   /// Unknown state, not yet submitted.
   none,
 }
-
-
-
