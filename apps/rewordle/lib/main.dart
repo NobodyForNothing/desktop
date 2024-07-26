@@ -27,19 +27,16 @@ class _RewordleAppState extends State<RewordleApp> {
   @override
   void initState() {
     super.initState();
-    today = new DateTime.now();
-    String dateSlug =
-        "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+    today = DateTime.now();
+    String dateSlug = today.wFormat();
     DayLoader.load(dateSlug).then((s) => setState(() {
-          state = s;
-        }));
+      state = s;
+    }));
   }
 
   @override
   void dispose() {
-    String dateSlug =
-        "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
-    if (state != null) DayLoader.save(dateSlug, state!);
+    if (state != null) DayLoader.save(today.wFormat(), state!);
     super.dispose();
   }
 
@@ -114,9 +111,7 @@ class _RewordleAppState extends State<RewordleApp> {
                             }
                           });
                           if (state != null) {
-                            String dateSlug =
-                                "${today.year.toString()}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
-                            DayLoader.save(dateSlug, state!);
+                            DayLoader.save(today.wFormat(), state!);
                           }
                         },
                         onBack: () {

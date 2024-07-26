@@ -125,3 +125,10 @@ enum LetterCorrectness {
   /// Unknown state, not yet submitted.
   none,
 }
+
+extension WordleFormat on DateTime {
+  /// Output this date as a wordle api compatible date.
+  ///
+  /// Example: `2024-02-23`
+  String wFormat() => "${year.toString()}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
+}

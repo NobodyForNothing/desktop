@@ -39,6 +39,10 @@ void main() {
     expect(s.submitted[0][3].state, LetterCorrectness.warn);
     expect(s.submitted[0][4].state, LetterCorrectness.ok);
   });
+  test('formats dates in wordle format', (){
+    final String s = DateTime(2024, 2, 23).wFormat();
+    expect(s, '2024-02-23');
+  });
 
 
 }
