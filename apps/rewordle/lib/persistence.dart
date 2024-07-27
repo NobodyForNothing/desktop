@@ -72,10 +72,10 @@ class GameState {
     return '$correctWord|$wrongLetters|$wrongPosLetters|$okLetters|$submissionsString';
   }
 
-  String? addWord(String word) {
+  String? addWord(String word, [bool skipWordListValidation = false]) {
     final letters = word.split('');
     if (letters.length != 5) return 'Not 5 letters long';
-    if (!VALID_WORDS.contains(word)) return 'Not in word list';
+    if (!(skipWordListValidation || VALID_WORDS.contains(word))) return 'Not in word list';
     final correct = correctWord.split('');
 
     final checked = <LetterData>[];
