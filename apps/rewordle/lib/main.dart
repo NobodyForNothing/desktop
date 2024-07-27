@@ -42,16 +42,16 @@ class _RewordleAppState extends State<RewordleApp> {
 
   @override
   Widget build(context) => MaterialApp(
-        theme: ThemeData(
-          backgroundColor: Defaults.background,
-          canvasColor: Defaults.background,
-        ),
-        home: DefaultTextStyle(
-            style: TextStyle(
-              fontSize: Defaults.textSize,
-              fontWeight: FontWeight.bold,
-            ),
-            child: Scaffold(
+    theme: ThemeData(
+      backgroundColor: Defaults.background,
+      canvasColor: Defaults.background,
+    ),
+    home: DefaultTextStyle(
+      style: TextStyle(
+        fontSize: Defaults.textSize,
+        fontWeight: FontWeight.bold,
+      ),
+      child: Scaffold(
                 backgroundColor: Defaults.background,
                 appBar: AppBar(
                   forceMaterialTransparency: true,

@@ -76,20 +76,35 @@ class GameState {
     final letters = word.split('');
     if (letters.length != 5) return 'Not 5 letters long';
     if (!VALID_WORDS.contains(word)) return 'Not in word list';
-    // TODO: word list check
+    final correct = correctWord.split('');
 
     final checked = <LetterData>[];
     for (int i = 0; i < 5; i++) {
-      final l = letters[i];
-      if (correctWord[i] == l) {
-        okLetters += l;
-        checked.add(LetterData(LetterCorrectness.ok, l));
-      } else if (correctWord.contains(l)) {
-        wrongPosLetters += l;
-        checked.add(LetterData(LetterCorrectness.warn, l));
+      if (correct[i] == letters[i]) {
+        correct[i] = '';
+	checked.add(LetterData(LetterCorrectness.ok, letters[i]));
       } else {
-        wrongLetters += l;
-        checked.add(LetterData(LetterCorrectness.err, l));
+        checked.add(LetterData(LetterCorrectness.err, letters[i]));
+      }
+    }
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 5; j++) {
+        if (correct[i] == letters[j]) {
+	  correct[i] = '';
+	  checked[j] = LetterData(LetterCorrectness.warn, letters[j]);
+	}
+      }
+    }
+
+    for (final l in checked) {
+      switch(l.state) {
+        case LetterCorrectness.ok:
+	  okLetters += l.letter;
+        case LetterCorrectness.warn:
+	  wrongPosLetters += l.letter;
+        case LetterCorrectness.err:
+	  wrongLetters += l.letter;
+	case LetterCorrectness.none:
       }
     }
 
