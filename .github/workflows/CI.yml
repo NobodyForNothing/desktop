@@ -46,4 +46,4 @@ jobs:
           cache: true
           channel: beta
       - uses: bluefireteam/melos-action@v3
-      - run: echo TODO # TODO: melos test
+      - run: melos test
