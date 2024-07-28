@@ -169,7 +169,6 @@ class Letter extends StatelessWidget {
   @override
   Widget build(context) {
     final w = 57.0;
-    final h = 57.0;
     final letter = Center(
         child: Text(
       l?.letter ?? "",
@@ -182,30 +181,30 @@ class Letter extends StatelessWidget {
     final box = switch (l?.state) {
       LetterCorrectness.ok => Container(
           width: w,
-          height: h,
+          height: w,
           color: Defaults.correctPos,
           child: letter,
         ),
       LetterCorrectness.warn => Container(
           width: w,
-          height: h,
+          height: w,
           color: Defaults.wrongPos,
           child: letter,
         ),
       LetterCorrectness.err => Container(
           width: w,
-          height: h,
+          height: w,
           color: Defaults.notInWord,
           child: letter,
         ),
       null || LetterCorrectness.none => Container(
           width: w,
-          height: h,
+          height: w,
           decoration: BoxDecoration(
             border: Border.all(width: 2.0, color: Defaults.notInWord),
           ),
           child: letter,
-        ),
+      ),
     };
 
     return Padding(
@@ -235,12 +234,12 @@ class Keyboard extends StatelessWidget {
 
   // todo: coloring
   Widget _letterBtn(String letter) => InkWell(
-      onTap: () => onLetter(letter),
-      child: Container(
-        width: 36.0,
-        height: 54.8,
-        decoration: BoxDecoration(
-          color: () {
+    onTap: () => onLetter(letter),
+    child: Container(
+      width: 35.0,
+      height: 53.5,
+      decoration: BoxDecoration(
+        color: () {
             if (okLetters.contains(letter)) {
               return Defaults.correctPos;
             } else if (wrongPosLetters.contains(letter)) {
@@ -249,18 +248,21 @@ class Keyboard extends StatelessWidget {
               return Color(0xff2c3033);
             }
             return Color(0xff5e6669);
-          }(),
-          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-        ),
-        margin: EdgeInsets.all(1.5),
-        child: Center(
-            child: Text(letter,
-                style: TextStyle(
-                  color: Defaults.textColor,
-                  fontSize: Defaults.textSize,
-                  fontWeight: FontWeight.bold,
-                ))),
-      ));
+        }(),
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+     ),
+    margin: EdgeInsets.all(1.5),
+    child: Center(
+      child: Text(letter,
+        style: TextStyle(
+          color: Defaults.textColor,
+          fontSize: Defaults.textSize,
+          fontWeight: FontWeight.bold,
+        )
+      )
+    ),
+  )
+);
 
   @override
   Widget build(c) => Column(
