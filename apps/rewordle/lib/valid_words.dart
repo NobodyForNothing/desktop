@@ -1,3 +1,4 @@
+/// Uppercase versions of all words acceptes by the original wordle.
 const List<String> VALID_WORDS = [
   'AAHED',
   'AALII',

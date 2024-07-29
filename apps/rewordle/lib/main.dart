@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import 'persistence.dart';
 
-void main() {
-  runApp(RewordleApp());
-}
+void main() => runApp(RewordleApp());
 
+/// Global configuration options.
 class Defaults {
+  /// Background color of the app.
   static final Color background = Colors.black;
+  /// Color of text and icons
   static final Color textColor = Colors.white;
+  /// Size of letters on keyboard and word input.
   static final double textSize = 24.0;
+  /// Background color of correct letters.
   static final Color correctPos = Color(0xFF669F5E);
+  /// Background color of letters at the wrong position.
   static final Color wrongPos = Color(0xFFC8B557);
+  /// Background color of letters that are not in the correct word.
   static final Color notInWord = Color(0xFF919293);
 }
 
+/// Base of the app, defines structure and logic.
 class RewordleApp extends StatefulWidget {
+  /// Create the rewordle app.
+  const RewordleApp({super.key});
+
   @override
   State<RewordleApp> createState() => _RewordleAppState();
 }
@@ -127,7 +136,11 @@ class _RewordleAppState extends State<RewordleApp> {
       );
 }
 
+/// List of past submissions current input and remaing attempts.
+///
+/// Shows past [guesses] and fills up the list of 6 [Guess]es with empty ones.
 class GuessesList extends StatelessWidget {
+  /// Create a word submission list.
   const GuessesList({required this.guesses});
 
   /// list of list containing all made guesses and the current input.
@@ -135,21 +148,23 @@ class GuessesList extends StatelessWidget {
 
   @override
   Widget build(context) => Padding(
-        padding: EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (int i = 0; i < 6; i++)
-              Guess(letters: guesses.getOrNull(i) ?? []),
-          ],
-        ),
-      );
+    padding: EdgeInsets.all(12.0),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < 6; i++)
+          Guess(letters: guesses.getOrNull(i) ?? []),
+      ],
+    ),
+  );
 }
 
+/// A wordle entry consisting of exactly 5 [Letter]s.
 class Guess extends StatelessWidget {
-  final List<LetterData> letters;
-
   const Guess({required this.letters});
+
+  /// Up to five letters making up the word.
+  final List<LetterData> letters;
 
   @override
   Widget build(context) => Center(
@@ -162,9 +177,13 @@ class Guess extends StatelessWidget {
       );
 }
 
+/// Single letter [l] on a background indicating correctness.
+///
+/// Correct warn and err letters are on their respective color configured in settings, unvalidated and null letters are on a transparent background with a border in the color of wrong letters.
 class Letter extends StatelessWidget {
-  final LetterData? l;
   const Letter(this.l);
+
+  final LetterData? l;
 
   @override
   Widget build(context) {
@@ -214,8 +233,10 @@ class Letter extends StatelessWidget {
   }
 }
 
+/// Shows the wordle keyboard and propagates events.
 class Keyboard extends StatelessWidget {
   const Keyboard({
+    super.key,
     required this.onLetter,
     required this.onDone,
     required this.onBack,
@@ -309,7 +330,9 @@ class Keyboard extends StatelessWidget {
       ); // todo
 }
 
+/// Utility method for generic lists.
 extension ListExtension<T> on List<T> {
+  /// Return null if [index] is out of range else return the content at that index.
   T? getOrNull(int index) {
     return (index >= 0 && index < length) ? this[index] : null;
   }
