@@ -1,16 +1,15 @@
 # rewordle
 
-A new Flutter project.
+A reimplementation of the classical wordle game focussing on simplicity and usability.
+
+This implementation shows the input before attempting any slow web requests leading to faster load times. Additionally not having an title screen means that input is possible without clicking through menues.
+
+## Features
+
+- Load todays wordle
+- Validate inputed words
+- Store current progress between loads
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To build the app normal flutter build commands can be used on all platforms.
