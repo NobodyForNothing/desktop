@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'persistence.dart';
+import 'package:rewordle/persistence.dart';
 
 void main() => runApp(RewordleApp());
 
@@ -29,7 +29,7 @@ class RewordleApp extends StatefulWidget {
 }
 
 class _RewordleAppState extends State<RewordleApp> {
-  GameState? state;
+  GameState? _state;
   String err = '';
   late DateTime today;
 
@@ -37,22 +37,40 @@ class _RewordleAppState extends State<RewordleApp> {
   void initState() {
     super.initState();
     today = DateTime.now();
-    String dateSlug = today.wFormat();
+    final String dateSlug = today.wFormat();
     DayLoader.load(dateSlug).then((s) => setState(() {
-      state = s;
+      _state = s;
     }));
   }
 
   @override
   void dispose() {
-    if (state != null) DayLoader.save(today.wFormat(), state!);
+    if (_state != null) DayLoader.save(today.wFormat(), _state!);
     super.dispose();
   }
 
+  Widget _buildLoadingIndicator() => Padding(
+    padding: EdgeInsets.all(3.0),
+    child: Stack(
+      children: [
+        Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Defaults.textColor,
+	    ),
+            strokeWidth: 1,
+          )
+	),
+        Center(
+          child: Icon(Icons.cloud, color: Defaults.textColor),
+	),
+      ],
+    ),
+  );
+
   @override
-  Widget build(context) => MaterialApp(
+  Widget build(BuildContext context) => MaterialApp(
     theme: ThemeData(
-      backgroundColor: Defaults.background,
       canvasColor: Defaults.background,
     ),
     home: DefaultTextStyle(
@@ -61,79 +79,67 @@ class _RewordleAppState extends State<RewordleApp> {
         fontWeight: FontWeight.bold,
       ),
       child: Scaffold(
-                backgroundColor: Defaults.background,
-                appBar: AppBar(
-                  forceMaterialTransparency: true,
-                  leading: state != null
-                      ? null
-                      : Padding(
-                          padding: EdgeInsets.all(3.0),
-                          child: Stack(children: [
-                            Center(
-                                child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Defaults.textColor),
-                              strokeWidth: 1,
-                            )),
-                            Center(
-                                child: Icon(Icons.cloud,
-                                    color: Defaults.textColor)),
-                          ]),
-                        ),
-                ),
-                body: Column(
-                  children: [
-                    GuessesList(guesses: [
-                      for (final e in state?.submitted ?? []) e,
-                      state?.current ?? [], // todo cache letters until loaded
-                    ]),
-                    if (!(state?.finished ?? false))
-                      Keyboard(
-                        okLetters: state?.okLetters ?? '',
-                        wrongPosLetters: state?.wrongPosLetters ?? '',
-                        wrongLetters: state?.wrongLetters ?? '',
-                        onLetter: (l) {
-                          if ((state?.current.length ?? 6) < 5) {
-                            setState(() => state!.current
-                                .add(LetterData(LetterCorrectness.none, l)));
-                          }
-                        },
-                        onDone: () {
-                          String word = '';
-                          for (final e in state?.current ?? []) {
-                            word += e.letter;
-                          }
-                          setState(() {
-                            try {
-                              String? resp = state?.addWord(word);
-                              if (state == null) {
-                                resp = 'Loading, please wait';
-                              }
-                              if (resp != null) {
-                                err = resp;
-                              } else {
-                                err = '';
-                                state?.current.clear();
-                              }
-                            } catch (e, s) {
-                              err = word + e.toString() + s.toString();
-                            }
-                          });
-                          if (state != null) {
-                            DayLoader.save(today.wFormat(), state!);
-                          }
-                        },
-                        onBack: () {
-                          if ((state?.current.length ?? 0) > 0)
-                            setState(() => state?.current.removeLast());
-                        },
-                      ),
-                    SingleChildScrollView(
-                        child:
-                            Text(err, style: TextStyle(color: Colors.white))),
-                  ],
-                ))),
-      );
+        backgroundColor: Defaults.background,
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          leading: _state != null
+            ? null
+            : _buildLoadingIndicator(),
+        ),
+        body: Column(
+          children: [
+            GuessesList(
+	      guesses: [
+                for (final e in _state?.submitted ?? []) e,
+                  _state?.current ?? [], // todo cache letters until loaded
+              ],
+	    ),
+            if (!(_state?.finished ?? false))
+              Keyboard(
+                okLetters: _state?.okLetters ?? '',
+                wrongPosLetters: _state?.wrongPosLetters ?? '',
+                wrongLetters: _state?.wrongLetters ?? '',
+                onLetter: (l) {
+                  if ((_state?.current.length ?? 6) < 5) {
+                    setState(() => _state!.current.add(
+		      LetterData(LetterCorrectness.none, l),
+		      ));
+                  }
+                },
+                onDone: () {
+                  String word = '';
+                  for (final e in _state?.current ?? []) {
+                    word += e.letter;
+                  }
+                  setState(() {
+                    String? resp = _state?.addWord(word);
+                    if (_state == null) {
+                      resp = 'Loading, please wait';
+                    }
+                    if (resp != null) {
+                      err = resp;
+                    } else {
+                      err = '';
+                      _state?.current.clear();
+                    }
+                  });
+
+                  if (_state != null) {
+                    DayLoader.save(today.wFormat(), _state!);
+                  }
+                },
+                onBack: () {
+                  if ((_state?.current.length ?? 0) > 0)
+                    setState(() => _state?.current.removeLast());
+                },
+              ),
+              SingleChildScrollView(
+                child: Text(err, style: TextStyle(color: Colors.white))),
+            ],
+          ),
+	),
+      ),
+    );
 }
 
 /// List of past submissions current input and remaing attempts.
@@ -147,7 +153,7 @@ class GuessesList extends StatelessWidget {
   final List<List<LetterData>> guesses;
 
   @override
-  Widget build(context) => Padding(
+  Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.all(12.0),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -190,7 +196,7 @@ class Letter extends StatelessWidget {
     final w = 57.0;
     final letter = Center(
         child: Text(
-      l?.letter ?? "",
+      l?.letter ?? '',
       style: TextStyle(
         fontSize: Defaults.textSize,
         fontWeight: FontWeight.bold,
@@ -292,13 +298,13 @@ class Keyboard extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (final l in "QWERTYUIOP".split("")) _letterBtn(l),
+              for (final l in 'QWERTYUIOP'.split('')) _letterBtn(l),
             ],
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (final l in "ASDFGHJKL".split("")) _letterBtn(l),
+              for (final l in 'ASDFGHJKL'.split('')) _letterBtn(l),
             ],
           ),
           Row(
@@ -310,11 +316,11 @@ class Keyboard extends StatelessWidget {
                   width: 60.0,
                   height: 45.0,
                   child: Center(
-                      child: Text("ENTER",
+                      child: Text('ENTER',
                           style: TextStyle(color: Defaults.textColor))),
                 ),
               ),
-              for (final l in "ZXCVBNM".split("")) _letterBtn(l),
+              for (final l in 'ZXCVBNM'.split('')) _letterBtn(l),
               InkWell(
                 onTap: onBack,
                 child: Container(
@@ -333,7 +339,7 @@ class Keyboard extends StatelessWidget {
 /// Utility method for generic lists.
 extension ListExtension<T> on List<T> {
   /// Return null if [index] is out of range else return the content at that index.
-  T? getOrNull(int index) {
-    return (index >= 0 && index < length) ? this[index] : null;
-  }
+  T? getOrNull(int index) => (index >= 0 && index < length)
+  ? this[index]
+  : null;
 }

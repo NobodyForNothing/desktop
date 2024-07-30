@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'valid_words.dart';
+import 'package:rewordle/valid_words.dart';
 
 /// A persistence and external storage manager.
 class DayLoader {
@@ -41,7 +41,7 @@ class GameState {
 
   /// Load a [serialize]d game state.
   factory GameState.deserialize(String data) {
-    final e = data.split("|");
+    final e = data.split('|');
 
     final state = GameState(e[0]);
     state.wrongLetters = e[1];
@@ -49,7 +49,6 @@ class GameState {
     state.okLetters = e[3];
 
     final words = e[4].split(',');
-    final correct = e[0].split('');
     words.forEach(state.addWord);
     return state;
   }
@@ -58,17 +57,17 @@ class GameState {
   final List<List<LetterData>> submitted = [];
   final String correctWord;
 
-  String wrongLetters = "";
-  String wrongPosLetters = "";
-  String okLetters = "";
+  String wrongLetters = '';
+  String wrongPosLetters = '';
+  String okLetters = '';
 
   bool finished = false;
 
   /// Store a wordle atate for later deserialization.
   String serialize() {
-    String submissionsString = "";
+    String submissionsString = '';
     for (final wData in submitted) {
-      String w = "";
+      String w = '';
       for (final l in wData) {
         w += l.letter;
       }
