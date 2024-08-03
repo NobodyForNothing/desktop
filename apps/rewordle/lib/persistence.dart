@@ -1,7 +1,8 @@
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:rewordle/valid_words.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// A persistence and external storage manager.
 class DayLoader {
@@ -9,7 +10,8 @@ class DayLoader {
   ///
   /// The method will recursively continue until a response is available.
   ///
-  /// [day] is expected to be in the wordle api format likke returned by the [WordleFormat] extension.
+  /// [day] is expected to be in the wordle api format likke returned by the
+  /// [WordleFormat] extension.
   static Future<GameState> load(String day, [SharedPreferences? prefs]) async {
     prefs ??= await SharedPreferences.getInstance();
 
@@ -37,6 +39,7 @@ class DayLoader {
 
 /// State and logic of a days wordle game.
 class GameState {
+  /// Create state and logic of a days wordle game.
   GameState(this.correctWord);
 
   /// Load a [serialize]d game state.
@@ -53,18 +56,30 @@ class GameState {
     return state;
   }
 
+  /// Up to 5 letters of the current input field.
   final List<LetterData> current = [];
+
+  /// History of up to 6 submitted and validated [current] values
   final List<List<LetterData>> submitted = [];
+
+  /// Solution to this wordle.
   final String correctWord;
 
+  /// [submitted] letters that are not in the [correctWord].
   String wrongLetters = '';
+
+  /// [submitted] letters that are in the [correctWord] but at another pos.
   String wrongPosLetters = '';
+
+  /// [submitted] letters that where at the same position as in [correctWord].
   String okLetters = '';
 
+  /// Whether [correctWord] was guessed.
   bool finished = false;
 
   /// Store a wordle atate for later deserialization.
   String serialize() {
+    // TODO: simplify format
     String submissionsString = '';
     for (final wData in submitted) {
       String w = '';
@@ -78,14 +93,17 @@ class GameState {
       submissionsString =
           submissionsString.substring(0, submissionsString.length - 1);
     }
-    return '$correctWord|$wrongLetters|$wrongPosLetters|$okLetters|$submissionsString';
+    return '$correctWord|$wrongLetters|$wrongPosLetters|$okLetters'
+        '|$submissionsString';
   }
 
   /// Add a word and update corresponding instance variables.
   String? addWord(String word, [bool skipWordListValidation = false]) {
     final letters = word.split('');
     if (letters.length != 5) return 'Not 5 letters long';
-    if (!(skipWordListValidation || VALID_WORDS.contains(word))) return 'Not in word list';
+    if (!(skipWordListValidation || VALID_WORDS.contains(word))) {
+      return 'Not in word list';
+    }
     final correct = correctWord.split('');
 
     final checked = <LetterData>[];
@@ -132,11 +150,14 @@ class GameState {
 
 /// A single [letter] and its validation [state].
 class LetterData {
+  /// Create a single [letter] and its validation [state].
+  const LetterData(this.state, this.letter);
+
+  /// Validation state of the [letter] against the correct word.
   final LetterCorrectness state;
+
   /// A one character(A-Z) long string.
   final String letter;
-
-  const LetterData(this.state, this.letter);
 }
 
 /// Validation state of a single wordle letter.
@@ -159,5 +180,6 @@ extension WordleFormat on DateTime {
   /// Output this date as a wordle api compatible date.
   ///
   /// Example: `2024-02-23`
-  String wFormat() => "${year.toString()}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
+  String wFormat() => "$year-${month.toString().padLeft(2, '0')}-"
+    "${day.toString().padLeft(2, '0')}";
 }

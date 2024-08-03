@@ -11,3 +11,5 @@ The project is finished once it supports the following git subcommands:
 A secondary goal of this project is to determine pain points in the
 implementation and to find out what abstractions are useful and which aren't in
 order to implement a more sophisticated vcs that can be used as a daily driver.
+
+TODO: gitignore

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:rewordle/persistence.dart';
 
-void main() => runApp(RewordleApp());
+void main() => runApp(const RewordleApp());
 
 /// Global configuration options.
 class Defaults {
   /// Background color of the app.
-  static final Color background = Colors.black;
+  static const Color background = Colors.black;
   /// Color of text and icons
-  static final Color textColor = Colors.white;
+  static const Color textColor = Colors.white;
   /// Size of letters on keyboard and word input.
-  static final double textSize = 24.0;
+  static const double textSize = 24.0;
   /// Background color of correct letters.
-  static final Color correctPos = Color(0xFF669F5E);
+  static const Color correctPos = Color(0xFF669F5E);
   /// Background color of letters at the wrong position.
-  static final Color wrongPos = Color(0xFFC8B557);
+  static const Color wrongPos = Color(0xFFC8B557);
   /// Background color of letters that are not in the correct word.
-  static final Color notInWord = Color(0xFF919293);
+  static const Color notInWord = Color(0xFF919293);
 }
 
 /// Base of the app, defines structure and logic.
@@ -49,7 +49,7 @@ class _RewordleAppState extends State<RewordleApp> {
     super.dispose();
   }
 
-  Widget _buildLoadingIndicator() => Padding(
+  Widget _buildLoadingIndicator() => const Padding(
     padding: EdgeInsets.all(3.0),
     child: Stack(
       children: [
@@ -74,7 +74,7 @@ class _RewordleAppState extends State<RewordleApp> {
       canvasColor: Defaults.background,
     ),
     home: DefaultTextStyle(
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: Defaults.textSize,
         fontWeight: FontWeight.bold,
       ),
@@ -129,12 +129,13 @@ class _RewordleAppState extends State<RewordleApp> {
                   }
                 },
                 onBack: () {
-                  if ((_state?.current.length ?? 0) > 0)
+                  if ((_state?.current.length ?? 0) > 0) {
                     setState(() => _state?.current.removeLast());
+                  }
                 },
               ),
               SingleChildScrollView(
-                child: Text(err, style: TextStyle(color: Colors.white))),
+                child: Text(err, style: const TextStyle(color: Colors.white))),
             ],
           ),
 	),
@@ -147,14 +148,14 @@ class _RewordleAppState extends State<RewordleApp> {
 /// Shows past [guesses] and fills up the list of 6 [Guess]es with empty ones.
 class GuessesList extends StatelessWidget {
   /// Create a word submission list.
-  const GuessesList({required this.guesses});
+  const GuessesList({super.key, required this.guesses});
 
   /// list of list containing all made guesses and the current input.
   final List<List<LetterData>> guesses;
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.all(12.0),
+    padding: const EdgeInsets.all(12.0),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -167,37 +168,42 @@ class GuessesList extends StatelessWidget {
 
 /// A wordle entry consisting of exactly 5 [Letter]s.
 class Guess extends StatelessWidget {
-  const Guess({required this.letters});
+  /// Create a wordle entry consisting of exactly 5 [Letter]s.
+  const Guess({super.key, required this.letters});
 
   /// Up to five letters making up the word.
   final List<LetterData> letters;
 
   @override
-  Widget build(context) => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (int i = 0; i < 5; i++) Letter(letters.getOrNull(i)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) => Center(
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < 5; i++) Letter(letters.getOrNull(i)),
+      ],
+    ),
+  );
 }
 
 /// Single letter [l] on a background indicating correctness.
 ///
-/// Correct warn and err letters are on their respective color configured in settings, unvalidated and null letters are on a transparent background with a border in the color of wrong letters.
+/// Correct warn and err letters are on their respective color configured in
+/// settings, unvalidated and null letters are on a transparent background with
+/// a border in the color of wrong letters.
 class Letter extends StatelessWidget {
-  const Letter(this.l);
+  /// Create a single letter [l] on a background indicating correctness.
+  const Letter(this.l, {super.key});
 
+  /// Content and state of the letter.
   final LetterData? l;
 
   @override
-  Widget build(context) {
-    final w = 57.0;
+  Widget build(BuildContext context) {
+    const w = 57.0;
     final letter = Center(
         child: Text(
       l?.letter ?? '',
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: Defaults.textSize,
         fontWeight: FontWeight.bold,
         color: Defaults.textColor,
@@ -233,14 +239,17 @@ class Letter extends StatelessWidget {
     };
 
     return Padding(
-      padding: EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(4.0),
       child: box,
     );
   }
 }
 
-/// Shows the wordle keyboard and propagates events.
+/// The wordle keyboard.
+///
+/// Allows inputting and deleting letters as well as requesting validation.
 class Keyboard extends StatelessWidget {
+  /// Create the wordle keyboard.
   const Keyboard({
     super.key,
     required this.onLetter,
@@ -251,12 +260,25 @@ class Keyboard extends StatelessWidget {
     required this.wrongLetters,
   });
 
+  /// Handler for letter key presses.
   final void Function(String) onLetter;
+
+  /// Handler for done presses.
   final void Function() onDone;
+
+  /// Handler for key deletion presses.
   final void Function() onBack;
 
+  /// String containing all letters that where once submitted to the correct
+  /// position.
   final String okLetters;
+
+  /// String containing all letters that where once submitted to a wrong
+  /// position.
   final String wrongPosLetters;
+
+  /// String containing all letters that where once submitted but not in the
+  /// word.
   final String wrongLetters;
 
   // todo: coloring
@@ -267,21 +289,21 @@ class Keyboard extends StatelessWidget {
       height: 53.5,
       decoration: BoxDecoration(
         color: () {
-            if (okLetters.contains(letter)) {
-              return Defaults.correctPos;
-            } else if (wrongPosLetters.contains(letter)) {
-              return Defaults.wrongPos;
-            } else if (wrongLetters.contains(letter)) {
-              return Color(0xff2c3033);
-            }
-            return Color(0xff5e6669);
+          if (okLetters.contains(letter)) {
+            return Defaults.correctPos;
+          } else if (wrongPosLetters.contains(letter)) {
+            return Defaults.wrongPos;
+          } else if (wrongLetters.contains(letter)) {
+            return const Color(0xff2c3033);
+          }
+          return const Color(0xff5e6669);
         }(),
-        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
      ),
-    margin: EdgeInsets.all(1.5),
+    margin: const EdgeInsets.all(1.5),
     child: Center(
       child: Text(letter,
-        style: TextStyle(
+        style: const TextStyle(
           color: Defaults.textColor,
           fontSize: Defaults.textSize,
           fontWeight: FontWeight.bold,
@@ -292,53 +314,56 @@ class Keyboard extends StatelessWidget {
 );
 
   @override
-  Widget build(c) => Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget build(BuildContext context) => Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final l in 'QWERTYUIOP'.split('')) _letterBtn(l),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final l in 'ASDFGHJKL'.split('')) _letterBtn(l),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              InkWell(
-                onTap: onDone,
-                child: Container(
-                  width: 60.0,
-                  height: 45.0,
-                  child: Center(
-                      child: Text('ENTER',
-                          style: TextStyle(color: Defaults.textColor))),
-                ),
+          for (final l in 'QWERTYUIOP'.split('')) _letterBtn(l),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final l in 'ASDFGHJKL'.split('')) _letterBtn(l),
+        ],
+      ),
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          InkWell(
+            onTap: onDone,
+            child: const SizedBox(
+              width: 60.0,
+              height: 45.0,
+              child: Center(
+                child: Text('ENTER',
+                  style: TextStyle(color: Defaults.textColor))
               ),
-              for (final l in 'ZXCVBNM'.split('')) _letterBtn(l),
-              InkWell(
-                onTap: onBack,
-                child: Container(
-                    width: 50.0,
-                    height: 45.0,
-                    child: Center(
-                        child:
-                            Icon(Icons.backspace, color: Defaults.textColor))),
+            ),
+          ),
+          for (final l in 'ZXCVBNM'.split('')) _letterBtn(l),
+          InkWell(
+            onTap: onBack,
+            child: const SizedBox(
+              width: 50.0,
+              height: 45.0,
+              child: Center(
+                child: Icon(Icons.backspace, color: Defaults.textColor)
               ),
-            ],
+            ),
           ),
         ],
-      ); // todo
+      ),
+    ],
+  );
 }
 
 /// Utility method for generic lists.
 extension ListExtension<T> on List<T> {
-  /// Return null if [index] is out of range else return the content at that index.
+  /// Return null if [index] is out of range else return the content at that
+  /// index.
   T? getOrNull(int index) => (index >= 0 && index < length)
   ? this[index]
   : null;

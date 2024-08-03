@@ -1,4 +1,5 @@
-/// Uppercase versions of all words acceptes by the original wordle.
+/// Uppercase versions of all words accepted by the original wordle.
+// ignore:constant_identifier_names
 const List<String> VALID_WORDS = [
   'AAHED',
   'AALII',
