@@ -1,0 +1,10 @@
+/home/derdilla/Coding/Flutter/derdilla-desktop/target/debug/deps/libbitcode_derive-23d12c87bfe6c571.so: /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/lib.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/attribute.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/bound.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/decode.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/encode.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/shared.rs
+
+/home/derdilla/Coding/Flutter/derdilla-desktop/target/debug/deps/bitcode_derive-23d12c87bfe6c571.d: /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/lib.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/attribute.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/bound.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/decode.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/encode.rs /home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/shared.rs
+
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/lib.rs:
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/attribute.rs:
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/bound.rs:
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/decode.rs:
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/encode.rs:
+/home/derdilla/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitcode_derive-0.6.3/src/shared.rs:

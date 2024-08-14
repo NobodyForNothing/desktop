@@ -1,0 +1,1 @@
+/home/derdilla/Coding/Flutter/derdilla-desktop/target/debug/dir_size: /home/derdilla/Coding/Flutter/derdilla-desktop/rust/dir_size/src/lib.rs /home/derdilla/Coding/Flutter/derdilla-desktop/rust/dir_size/src/main.rs
