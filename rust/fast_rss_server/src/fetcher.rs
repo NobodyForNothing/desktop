@@ -1,8 +1,8 @@
 use reqwest::IntoUrl;
 use roxmltree::{Document, Node};
-use crate::channel::{Channel, Item};
+use fast_rss_data::{Channel, Item, RssSummary};
 
-pub async fn fetch<T: IntoUrl>(url: T) -> Option<Vec<Channel>> {
+pub async fn fetch<T: IntoUrl>(url: T) -> Option<RssSummary> {
     let res = reqwest::get(url);
     let res = res.await.ok()?;
     if res.status().as_u16() == 200 {
@@ -13,6 +13,7 @@ pub async fn fetch<T: IntoUrl>(url: T) -> Option<Vec<Channel>> {
             match node.attribute("version")? {
                 "2.0" => {
                     let data = parse_rss_v2(node);
+                    let data = RssSummary { data };
                     Some(data)
                 }
                 _ => { None }
@@ -30,7 +31,7 @@ fn parse_rss_v2(rss: Node) -> Vec<Channel> {
     let mut channels: Vec<Channel> = Vec::new();
     for channel_node in rss.children() {
         if channel_node.tag_name().name() == "channel" {
-            let mut channel = Channel::new();
+            let mut channel = Channel::default();
             for node in channel_node.children() {
                 match node.tag_name().name() {
                     "title" => {
@@ -54,7 +55,7 @@ fn parse_rss_v2(rss: Node) -> Vec<Channel> {
                         }
                     }
                     "item" => {
-                        let mut item = Item::new();
+                        let mut item = Item::default();
                         for node in node.children() {
                             match node.tag_name().name() {
                                 "title" => {

@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fast_rss_data = { version = "0.1.0", path = "../fast_rss_data" }
 reqwest = "0.12.5"
 roxmltree = "0.20.0"
 tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros"] }
-zstd = "0.13.1"

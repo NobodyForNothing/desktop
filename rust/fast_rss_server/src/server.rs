@@ -5,7 +5,6 @@ use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::{task, time};
 use crate::fetcher;
-use crate::formatter::format;
 
 pub struct Server {
     data: Vec<u8>,
@@ -14,7 +13,7 @@ pub struct Server {
 impl Server {
     pub async fn start() {
         let data = Server {
-            data: zstd::bulk::compress(b"loading...", 19).unwrap(),
+            data: Vec::new(),
         };
         let data = Mutex::new(data);
         let data = Arc::new(data);
@@ -24,7 +23,7 @@ impl Server {
             let mut timer = time::interval(Duration::from_secs(60 * 15));
             loop {
                 if let Some(data) = fetcher::fetch("https://www.rssboard.org/files/sample-rss-2.xml").await {
-                    data_update.lock().await.data = format(data);
+                    data_update.lock().await.data = fast_rss_data::encode(&data, true).unwrap();
                 }
                 timer.tick().await;
             }
