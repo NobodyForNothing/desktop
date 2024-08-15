@@ -5,5 +5,6 @@ members = [
     "dir_size",
     "iniconf",
     "vcs",
-    "fast_rss_server", "fast_rss_data",
+    "fast_rss_server",
+    "fast_rss_data",
 ]

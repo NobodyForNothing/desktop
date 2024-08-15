@@ -28,3 +28,9 @@ While there is some effort to write a tool/script set that can do everything the
 - melos for testing and linting flutter/dart projects and unifying dependencies
 - manual build for flutter app releases
 - normal rust build for rust apps
+
+## natives
+
+all rust code used by apps is in its own package with a rust directory. There is
+a buildnative build step that builds these native libraries and puts them in 
+their respective platform directories.

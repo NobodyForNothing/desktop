@@ -64,6 +64,7 @@ impl Default for Item {
     }
 }
 
+#[test]
 mod tests {
     use crate::{Channel, decode, encode, Item, RssSummary};
 

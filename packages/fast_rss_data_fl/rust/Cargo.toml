@@ -1,0 +1,12 @@
+[package]
+name = "fast_rss_data_fl"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+bitcode = "0.6.3"
+flutter_rust_bridge = "=2.2.0"
+zstd = "0.13.2"

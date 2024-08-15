@@ -13,12 +13,68 @@ ignore:
   - "**/build/**"
 
 scripts:
+  analyze:
+    exec: flutter analyze .
+    description: Analyze a specific package in this project.
+
+  check-format:
+    exec: dart format --set-exit-if-changed .
+    description: Check the format of a specific package in this project.
+
+  format:
+    exec: dart format .
+    description: Format a specific package in this project.
+
+  build:
+    run: melos run build:android && melos run build:other
+    description: Build all native libraries for the project.
+
+  build:android:
+    run: bash scripts/build-android.sh
+    description: Build the .tar.gz for Android.
+
+  build:other:
+    run: bash scripts/build-other.sh
+    description: Build the .tar.gz for all other platforms.
+
+  codegen:
+    run: flutter_rust_bridge_codegen generate
+    description: Run the flutter_rust_bridge code generation.
+
   test:
-    run: flutter test
+    run: melos run test:dart --no-select && melos run test:flutter --no-select
+    description: Run all Dart & Flutter tests in this project.
+
+  test:dart:
+    run: melos exec -c 1 --fail-fast -- "dart test test"
+    description: Run Dart tests for a specific package in this project.
+    select-package:
+      flutter: false
+      dir-exists: test
+
+  test:flutter:
+    run: melos exec -c 1 --fail-fast -- "flutter test test"
+    description: Run Flutter tests for a specific package in this project.
+    select-package:
+      flutter: true
+      dir-exists: test
+
+  upgrade:
+    run: melos run upgrade:dart --no-select && melos run upgrade:flutter --no-select
+    description: Update all Dart & Flutter dependencies in this project.
+
+  upgrade:dart:
+    run: dart pub upgrade
+    description: Update Dart dependencies for a specific package in this project.
+    select-package:
+      flutter: false
     exec:
       concurrency: 1
-      dir-exists: "test"
-  upgrade:
+
+  upgrade:flutter:
     run: flutter pub upgrade
+    description: Update Flutter dependencies for a specific package in this project.
+    select-package:
+      flutter: true
     exec:
       concurrency: 1
