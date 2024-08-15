@@ -2,7 +2,20 @@ use reqwest::IntoUrl;
 use roxmltree::{Document, Node};
 use fast_rss_data::{Channel, Item, RssSummary};
 
-pub async fn fetch<T: IntoUrl>(url: T) -> Option<RssSummary> {
+pub async fn fetch_all(urls: &[&str]) -> RssSummary {
+    let mut channels = Vec::new();
+    for url in urls {
+        if let Some(mut data) = fetch(url.to_string()).await {
+            channels.append(&mut data)
+        } else {
+            println!("WARN: Couldn't fetch channel from {}", &url);
+        }
+    }
+    RssSummary { data: channels }
+}
+
+pub async fn fetch<T: IntoUrl>(url: T) -> Option<Vec<Channel>> {
+    let url = url.into_url().ok()?;
     let res = reqwest::get(url);
     let res = res.await.ok()?;
     if res.status().as_u16() == 200 {
@@ -13,7 +26,6 @@ pub async fn fetch<T: IntoUrl>(url: T) -> Option<RssSummary> {
             match node.attribute("version")? {
                 "2.0" => {
                     let data = parse_rss_v2(node);
-                    let data = RssSummary { data };
                     Some(data)
                 }
                 _ => { None }

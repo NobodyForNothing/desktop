@@ -1,10 +1,9 @@
 use std::sync::{Arc};
 use tokio::sync::{Mutex};
-use std::time::Duration;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::{task, time};
-use crate::fetcher;
+use crate::{config, fetcher};
 
 pub struct Server {
     data: Vec<u8>,
@@ -20,17 +19,17 @@ impl Server {
 
         let data_update = data.clone();
         task::spawn(async move {
-            let mut timer = time::interval(Duration::from_secs(60 * 15));
+            let mut timer = time::interval(config::UPDATE_INTERVALL);
             loop {
-                if let Some(data) = fetcher::fetch("https://www.rssboard.org/files/sample-rss-2.xml").await {
-                    data_update.lock().await.data = fast_rss_data::encode(&data, true).unwrap();
-                }
+                let data = fetcher::fetch_all(config::FEEDS).await;
+                let data = fast_rss_data::encode(&data, true).unwrap();
+                data_update.lock().await.data = data;
                 timer.tick().await;
             }
         });
         let data_serve = data.clone();
         task::spawn(async move {
-            let listener = TcpListener::bind("127.0.0.1:5678").await.ok().unwrap();
+            let listener = TcpListener::bind(format!("127.0.0.1:{}", config::PORT)).await.ok().unwrap();
             loop {
                 if let Ok((mut soc, addr)) = listener.accept().await {
                     println!("New request from: {}", addr);
