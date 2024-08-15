@@ -1,3 +1,4 @@
+use log::{debug, warn};
 use reqwest::IntoUrl;
 use roxmltree::{Document, Node};
 use fast_rss_data::{Channel, Item, RssSummary};
@@ -8,7 +9,7 @@ pub async fn fetch_all(urls: &[&str]) -> RssSummary {
         if let Some(mut data) = fetch(url.to_string()).await {
             channels.append(&mut data)
         } else {
-            println!("WARN: Couldn't fetch channel from {}", &url);
+            warn!("Couldn't fetch channels from feed: '{}'.", &url);
         }
     }
     RssSummary { data: channels }
@@ -16,7 +17,7 @@ pub async fn fetch_all(urls: &[&str]) -> RssSummary {
 
 pub async fn fetch<T: IntoUrl>(url: T) -> Option<Vec<Channel>> {
     let url = url.into_url().ok()?;
-    let res = reqwest::get(url);
+    let res = reqwest::get(url.clone());
     let res = res.await.ok()?;
     if res.status().as_u16() == 200 {
         let res = res.text().await.ok()?;
@@ -28,12 +29,17 @@ pub async fn fetch<T: IntoUrl>(url: T) -> Option<Vec<Channel>> {
                     let data = parse_rss_v2(node);
                     Some(data)
                 }
-                _ => { None }
+                _ => {
+                    debug!("Non v2.0 RSS feed: '{url}'");
+                    None
+                }
             }
         } else {
+            debug!("Non RSS feed: '{url}'");
             None
         }
     } else {
+        debug!("Cant connect to: '{url}'");
         None
     }
 }

@@ -2,6 +2,7 @@ use crate::server::Server;
 
 mod server;
 mod fetcher;
+mod logger;
 
 mod config {
     use std::time::Duration;
@@ -16,5 +17,6 @@ mod config {
 
 #[tokio::main]
 async fn main() {
+    logger::init().unwrap();
     Server::start().await;
 }
