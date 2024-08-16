@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fast_rss_data_fl/fast_rss_data_fl.dart';
 import 'package:flutter/material.dart';
 import 'package:rss_client/data/fetcher.dart';
@@ -11,7 +13,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     theme: ThemeData.dark(useMaterial3: true),
     home: FutureBuilder(
-      future: const Fetcher('10.0.2.2', 5678).fetch(),
+      future: Fetcher(Platform.isAndroid ? '10.0.2.2' : '127.0.0.1', 5678).fetch(),
       builder: (BuildContext context, AsyncSnapshot<RssSummary?> snapshot) {
         if (snapshot.hasData) {
           return Home(data: snapshot.data);

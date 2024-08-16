@@ -11,7 +11,11 @@ class Fetcher {
   Future<RssSummary?> fetch() async {
     final connection = await Socket.connect(host, port);
     final data = await connection.first;
-    return decode(data: data, decompress: true);
+    print('data');
+
+    final d = await decode(data: data, decompress: true);
+    print(d);
+    return d;
   }
 }
 

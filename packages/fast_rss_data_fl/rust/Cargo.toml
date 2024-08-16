@@ -7,6 +7,7 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-bitcode = "0.6.3"
+bitcode = "*"
+fast_rss_data = { version = "0.1.0", path = "../../../rust/fast_rss_data" }
 flutter_rust_bridge = "=2.2.0"
-zstd = "0.13.2"
+zstd = "*"

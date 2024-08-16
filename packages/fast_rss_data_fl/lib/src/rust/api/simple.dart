@@ -8,10 +8,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`
 
-Uint8List? encode({required RssSummary data, required bool compress}) =>
+Future<Uint8List?> encode({required RssSummary data, required bool compress}) =>
     RustLib.instance.api.crateApiSimpleEncode(data: data, compress: compress);
 
-RssSummary? decode({required List<int> data, required bool decompress}) =>
+Future<RssSummary?> decode(
+        {required List<int> data, required bool decompress}) =>
     RustLib.instance.api
         .crateApiSimpleDecode(data: data, decompress: decompress);
 

@@ -4,3 +4,4 @@ pubspec_overrides.yaml
 pubspec.lock
 *.iml
 apps/.rss_client/
+target/

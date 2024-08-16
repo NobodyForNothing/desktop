@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "rust/dir_size",
+    "rust/iniconf",
+    "rust/vcs",
+    "rust/fast_rss_server",
+    "rust/fast_rss_data",
+    "packages/fast_rss_data_fl/rust"
+]
