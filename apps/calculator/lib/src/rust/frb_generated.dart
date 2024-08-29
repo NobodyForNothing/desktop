@@ -95,7 +95,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       constMeta: kInitAppConstMeta,
       argValues: [],
       apiImpl: this,
-      hint: hint,
     ));
   }
 
@@ -120,7 +119,6 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       constMeta: kInterpretConstMeta,
       argValues: [equation],
       apiImpl: this,
-      hint: hint,
     ));
   }
 
