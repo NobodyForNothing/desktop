@@ -10,7 +10,7 @@ impl SnipCreator {
     }
 
     pub fn add(&self, name: String) -> bool {
-        fs::write(self.path.join(name), "todo");
+        fs::write(self.path.join(name), "todo").unwrap();
         true
     }
 }
