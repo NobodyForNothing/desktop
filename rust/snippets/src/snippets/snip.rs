@@ -2,14 +2,12 @@ use std::{fs::{self, Metadata}, path::PathBuf, time::SystemTime};
 
 use log::{debug, trace, warn};
 
-use super::lang::Lang;
-
 pub struct Snip {
     pub content: String,
     pub name: String,
     pub last_mod: SystemTime,
     pub tags: Vec<String>,
-    pub lang: Lang,
+    pub lang: String,
 }
 
 #[derive(Debug)]
@@ -82,7 +80,7 @@ impl SnipBuilder {
             name: self.name,
             last_mod,
             tags,
-            lang: Lang::Md,
+            lang: String::from("TODO"),
         })
     }
 }

@@ -2,13 +2,12 @@ use std::fs;
 
 use colored::{Colorize, CustomColor};
 use creator::SnipCreator;
-use log::{debug, error, info};
+use log::{debug, error, info, trace};
 use snip::{Snip, SnipBuilder};
 
 use crate::input::config::Config;
 
 mod creator;
-mod lang;
 mod snip;
 
 pub struct SnipetsFolderBuilder<'a> {
@@ -82,8 +81,10 @@ pub struct SnipptsFolder {
 }
 
 impl SnipptsFolder {
-    pub fn add(&self, name: String) {
-        self.creator.add(name);
+    pub fn add(&self, name: String, tags: Vec<String>, content: String) {
+        trace!("Constructing note from name: '{}', tags: ['{}'], content: '\n{}'", &name, tags.join("','"), &content);
+        let content = format!("{}\n{}", tags.join(","), content.as_str());
+        self.creator.add(name, content);
     }
     pub fn list(&self) {
         println!("{}", "Available snippets:".bold().underline());

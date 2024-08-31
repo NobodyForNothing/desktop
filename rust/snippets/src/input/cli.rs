@@ -28,6 +28,17 @@ pub enum Commands {
 
 #[derive(Args, Debug)]
 pub struct AddArgs {
-    #[arg(short, long)]
+    /// Short display title and internal file name.
     pub title: String,
+
+    /// List of tags to find notes more quickly.
+    pub tags: Vec<String>,
+
+    /// Automatically create note from clipboard.
+    #[arg(short, long)]
+    pub clipboard: bool,
+
+    /// Programming language for more automatic snippet insisghts.
+    #[arg(short, long)]
+    pub lang: Option<String>,
 }
