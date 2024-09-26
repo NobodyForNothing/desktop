@@ -17,7 +17,7 @@ class Settings extends StatelessWidget {
   // TODO: open repository
   Widget _buildAppInfo(BuildContext context) => GestureDetector(
         onTap: () async {
-          final url = Uri.parse('https://github.com/NobodyForNothing/desktop/');
+          final url = Uri.parse('https://github.com/derdilla/desktop/');
           if (await launchUrl(url) && context.mounted) {
             // TODO: pretty snackbar across all apps
             ScaffoldMessenger.of(context).showSnackBar(
